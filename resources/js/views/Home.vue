@@ -1,7 +1,8 @@
 <template>
-  <div class="Home">
-    - HOME <span>!!</span> -
-  </div>
+  <v-main class="Home">
+    HOME <span>!!</span>
+    <v-btn text small color="primary">Primary</v-btn>
+  </v-main>
 </template>
 
 <script>

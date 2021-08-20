@@ -7,6 +7,9 @@
 </template>
 
 <style lang="scss">
+:root {
+  --txt-color: #3b3b3b;
+}
 
 * {margin: 0; padding: 0}
 
@@ -18,7 +21,7 @@ body {
   font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #3b3b3b;
+  color: var(--txt-color);
 }
 
 ::-webkit-scrollbar {

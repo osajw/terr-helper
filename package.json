@@ -12,7 +12,9 @@
     "devDependencies": {
         "@mdi/js": "^5.9.55",
         "axios": "^0.21",
+        "crypto-js": "^4.1.1",
         "laravel-mix": "^6.0.6",
+        "pdfmake": "^0.2.2",
         "postcss": "^8.1.14",
         "resolve-url-loader": "^3.1.2",
         "sass": "^1.32.11",
@@ -22,6 +24,7 @@
         "vue-router": "^3.5.2",
         "vue-template-compiler": "^2.6.12",
         "vuetify": "^2.5.8",
+        "vuetify-loader": "^1.7.2",
         "vuex": "^3.6.2"
     }
 }

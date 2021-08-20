@@ -1,54 +1,68 @@
 <template>
-  <div id="app">
-    <v-app>
-      <router-view>loading...</router-view>
-    </v-app>
-  </div>
+  <v-app>
+    <Header />
+    <v-expand-transition>
+      <router-view/>
+    </v-expand-transition>
+    <BottomNav />
+  </v-app>
 </template>
 
+<script>
+import Header from './components/Header.vue'
+import BottomNav from './components/BottomNav.vue'
+
+export default {
+  name: 'Home',
+  components: {
+    Header, BottomNav
+  },
+  created () {
+    document.addEventListener('nSQLCreateDatabaseDone', () => {
+      this.$store.dispatch('fetchPref').then((prefs) => {
+        this.$vuetify.theme.dark = prefs.darkmode
+        this.$store.commit('SET_DATA', { name: 'ready', data: true })
+      })
+    })
+  }
+}
+</script>
+
 <style lang="scss">
-:root {
-  --txt-color: #3b3b3b;
+*, *::after, *::before {
+    box-sizing: border-box;
 }
 
-* {margin: 0; padding: 0}
+* {
+  scrollbar-color: var(--v-secondary-base) transparent; // Firefox
+  scrollbar-width: 8px; // Firefox
 
-body {
-  background-color: #f9f9f9;
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background-color: var(--v-secondary-base);
+  }
 }
 
-#app {
-  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
+html, body {
+  overflow: auto !important;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: var(--txt-color);
 }
 
-::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
-}
-::-webkit-scrollbar-button {
-  width: 0px;
-  height: 0px;
-}
-::-webkit-scrollbar-thumb {
-  background: #e1e1e1;
-  border: 0px none #ffffff;
-  border-radius: 2px;
-  &:hover, &:active {
-    background: #353535;
+.v-main {
+  &__wrap {
+    padding: 10px 10px 66px 10px;
   }
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-  border: 0px none #ffffff;
-  border-radius: 0px;
-  &:hover, &:active {
-    background: rgba(185, 185, 185, 0.1);
-  }
-}
-::-webkit-scrollbar-corner {
-  background: transparent;
 }
 </style>

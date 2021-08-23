@@ -18,7 +18,6 @@
           <v-form ref="form" class="BasicForm" v-model="valid" lazy-validation>
             <v-text-field v-model="form.name" :rules="nameRules" label="Nom :" required />
             <v-textarea v-model="form.desc" label="Description :" rows="2" auto-grow />
-            <v-text-field v-model="form.imageUrl" label="Image (URL ou Data-URI) :" clearable />
           </v-form>
           <h4>Personnes à ne pas visiter :</h4>
           <div class="npvs">
@@ -38,7 +37,7 @@
           </div>
         </v-container>
       </v-card-text>
-      <v-img v-if="form.imageUrl" :src="form.imageUrl" />
+      <v-img :src="`./images/${form.name}.jpg`" lazy-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" />
       <v-virtual-scroll :bench="1" :items="history" :height="history.length > 3 ? 200 : history.length * 64 + 32" item-height="64">
         <template v-slot:default="{ item }">
           <v-list-item :key="item.id">

@@ -1,6 +1,6 @@
 import { AES, enc } from 'crypto-js'
 
-const toCrypt = ['name', 'desc', 'imageUrl', 'firstname', 'lastname', 'email', 'phone', 'address', 'planUrl']
+const toCrypt = ['name', 'desc', 'firstname', 'lastname', 'email', 'phone', 'address', 'planUrl']
 
 export function encryptObj (obj, password) {
   Object.keys(obj)

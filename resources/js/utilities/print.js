@@ -47,15 +47,17 @@ const getGreeting = () => {
 }
 
 export async function printTerr (terr, shareTo) {
-  const imageUrl = terr.imageUrl
+  const imageUrl = `./images/${terr.name}.jpg`
   let landscape = false
   let img, img64
-  if (imageUrl) {
+  try {
     img64 = await getDataUrl(imageUrl)
     img = await loadImage(img64)
     if (img.height > img.width) {
       landscape = true
     }
+  } catch (error) {
+    console.log('print error:', error)
   }
   const havePlan = terr.npvs.find(n => n.planUrl)
   const npvs = []

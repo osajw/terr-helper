@@ -1,5 +1,5 @@
 import pdfMake from 'pdfmake/build/pdfmake'
-import pdfFonts from 'pdfmake/build/vfs_fonts'
+import pdfFonts from './vfs_fonts'
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 pdfMake.fonts = {
   Roboto: {
@@ -77,19 +77,22 @@ export async function printTerr (terr, shareTo) {
       tableHeader: { bold: true, fontSize: 13, color: 'black' }
     }
   }
-  const npvsTable = {
-    table: {
-      headerRows: 1,
-      body: [
-        [
-          { text: 'Date', style: 'tableHeader' },
-          { text: 'Adresse', style: 'tableHeader' },
-          ...(havePlan ? [{ text: 'Plan', style: 'tableHeader' }] : [])
-        ],
-        ...npvs
-      ]
+  const npvsTable = npvs.length ? [
+    { text: 'Ne pas visiter: ', bold: true },
+    {
+      table: {
+        headerRows: 1,
+        body: [
+          [
+            { text: 'Date', style: 'tableHeader' },
+            { text: 'Adresse', style: 'tableHeader' },
+            ...(havePlan ? [{ text: 'Plan', style: 'tableHeader' }] : [])
+          ],
+          ...npvs
+        ]
+      }
     }
-  }
+  ] : ' '
   if (img64) {
     if (landscape) {
       docDefinition.content = [{

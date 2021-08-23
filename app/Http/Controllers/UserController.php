@@ -34,7 +34,7 @@ class UserController extends Controller
     {
         $data = $request->all();
         $validator = Validator::make($data, [
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:6',
         ]);
 
         if ($validator->fails())
@@ -74,6 +74,11 @@ class UserController extends Controller
             return response()->json(['token_absent'], $e->getStatusCode());
         }
         return response()->json(compact('user'));
+    }
+
+    public function getNumberOfUser()
+    {
+        return response()->json(User::all()->count());
     }
 }
 

@@ -12,31 +12,31 @@ use App\Models\Npv;
 class DataController extends Controller
 {
     protected $models = [
-        'territory' => Territory::class,
-        'people' => People::class,
-        'withdrawal' => Withdrawal::class,
-        'npv' => Npv::class,
+        'territories' => Territory::class,
+        'peoples' => People::class,
+        'withdrawals' => Withdrawal::class,
+        'npvs' => Npv::class,
     ];
 
     protected $validations = [
-        'territory' => [
+        'territories' => [
             'name' => 'required|string|min:1',
             'desc' => 'nullable|string|min:1',
             'difficulty' => 'nullable|numeric',
         ],
-        'people' => [
+        'peoples' => [
             'firstname' => 'required|string|min:1',
             'lastname' => 'required|string|min:1',
             'email' => 'nullable|string|min:5',
             'phone' => 'nullable|string|min:1',
         ],
-        'withdrawal' => [
+        'withdrawals' => [
             'territoryId' => 'required|exists:territories,id',
             'peopleId' => 'required|exists:peoples,id',
             'outAt' => 'nullable|date',
             'inAt' => 'nullable|date',
         ],
-        'npv' => [
+        'npvs' => [
             'territoryId' => 'required|exists:territories,id',
             'address' => 'nullable|string|min:1',
             'date' => 'nullable|date',
@@ -65,7 +65,7 @@ class DataController extends Controller
     /** Store a newly created resource in storage. */
     public function store(Request $request, $type)
     {
-        $model = $this->models[$type];
+        $model = $this->getModel($type);
         if (!$model) {
             return response()->json(['error' => 'invalid_type'], 400);
         }
@@ -84,7 +84,7 @@ class DataController extends Controller
     /** Display the specified resource. */
     public function show(Request $request, $type, $id)
     {
-        $model = $this->models[$type];
+        $model = $this->getModel($type);
         if (!$model) {
             return response()->json(['error' => 'invalid_type'], 400);
         }
@@ -94,7 +94,7 @@ class DataController extends Controller
     /** Update the specified resource in storage. */
     public function update(Request $request, $type, $id)
     {
-        $model = $this->models[$type];
+        $model = $this->getModel($type);
         if (!$model) {
             return response()->json(['error' => 'invalid_type'], 400);
         }
@@ -118,7 +118,7 @@ class DataController extends Controller
     /** Remove the specified resource from storage. */
     public function destroy(Request $request, $type, $id)
     {
-        $model = $this->models[$type];
+        $model = $this->getModel($type);
         if (!$model) {
             return response()->json(['error' => 'invalid_type'], 400);
         }

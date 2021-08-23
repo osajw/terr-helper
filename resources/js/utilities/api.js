@@ -1,39 +1,39 @@
+const doRequest = (type, token, id, method = 'GET') => {
+  const headers = new Headers()
+    headers.append('Authorization', `Bearer ${token}`)
+  return fetch(`/api/${type}${id ? `/${id}` : ''}`, { method, headers })
+    .then(res => res.json())
+}
 export default class API {
-  static getAll () {
-    return new Promise((resolve, reject) => {
-      console.log('getAll')
-      resolve([])
-    })
+  static getAll (type, token) {
+    return doRequest(type, token)
   }
 
-  static get (name) {
-    return new Promise((resolve, reject) => {
-      console.log('get', name)
-      resolve(null)
-    })
+  static get (type, id, token) {
+    return doRequest(type, token, id)
   }
 
-  static add (name, data, noUpdateAt) {
+  static add (type, data, noUpdateAt, token) {
     if (!noUpdateAt) {
       data = { ...data, updateAt: new Date().toISOString() }
     }
     return new Promise((resolve, reject) => {
-      console.log('add', name, data)
+      console.log('add', type, data)
       resolve(null)
     })
   }
 
-  static update (name, data, noUpdateAt) {
+  static update (type, data, noUpdateAt, token) {
     if (!noUpdateAt) {
       data = { ...data, updateAt: new Date().toISOString() }
     }
     return new Promise((resolve, reject) => {
-      console.log('update', name, data)
+      console.log('update', type, data)
       resolve(null)
     })
   }
 
-  static remove (name, id) {
+  static remove (type, id, token) {
     return new Promise((resolve, reject) => {
       console.log('remove', id)
       resolve(null)

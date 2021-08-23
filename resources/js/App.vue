@@ -18,11 +18,8 @@ export default {
     Header, BottomNav
   },
   created () {
-    document.addEventListener('nSQLCreateDatabaseDone', () => {
-      this.$store.dispatch('fetchPref').then((prefs) => {
-        this.$vuetify.theme.dark = prefs.darkmode
-        this.$store.commit('SET_DATA', { name: 'ready', data: true })
-      })
+    this.$store.dispatch('fetchPref').then((prefs) => {
+      this.$vuetify.theme.dark = prefs.darkmode
     })
   }
 }

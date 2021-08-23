@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { printS13 } from './utilities/print'
-import API from './utilities/api'
 import { encryptObj, decryptObj } from './utilities/crypt'
+import axios from 'axios'
 const dateHelper = require('./components/mixins/dateHelper').dateHelper.methods
 
 Vue.use(Vuex)
@@ -37,10 +37,19 @@ function openFile (accept) {
   })
 }
 
+const api = (type, token, id, method = 'GET', data = {}) => {
+  return axios({
+    url: `/api/${type}${id ? `/${id}` : ''}`,
+    data,
+    headers: token ? { 'Authorization': `Bearer ${token}` } : null,
+    method
+  }).then(({ data }) => data)
+}
+
 export default new Vuex.Store({
   state: {
-    ready: true,
-    preferences: [],
+    token: '',
+    preferences: {},
     territories: [],
     peoples: [],
     withdrawals: [],
@@ -71,33 +80,33 @@ export default new Vuex.Store({
   },
   actions: {
     fetchAll ({ commit, state }) {
-      return API.getAll().then((data) => {
-        Object.keys(data).forEach(name => commit('SET_DATA', { name, data: data[name] }))
-        return data
-      })
+      const dbs = ['territories', 'peoples', 'withdrawals', 'npvs']
+      const proms = []
+      dbs.forEach(name => proms.push(api(name, state.token)
+        .then(data => commit('SET_DATA', { name, data }))))
+      return Promise.all(proms)
     },
-    fetchPref ({ commit, state }) {
-      return API.get('preferences').then((data) => {
-        commit('SET_DATA', { name: 'preferences', data })
-        return state.preferences[0] || {}
-      })
+    fetchPref ({ commit }) {
+      const data = JSON.parse(localStorage.getItem('prefs') || '{}')
+      commit('SET_DATA', { name: 'preferences', data })
+      return Promise.resolve(data)
     },
-    createData ({ commit }, { name, data, noUpdateAt }) {
-      return API.add(name, data, noUpdateAt).then((data) => {
+    createData ({ commit, state }, { name, data }) {
+      return api(name, state.token, '', 'POST', data).then((data) => {
         commit('ADD_DATA', { name, data })
         return data
       })
     },
-    updateData ({ commit }, { name, data, noUpdateAt }) {
-      return API.update(name, data, noUpdateAt).then((data) => {
+    updateData ({ commit, state }, { name, data }) {
+      return api(name, state.token, data.id, 'PUT', data).then((data) => {
         commit('UPDATE_DATA', { name, data })
         return data
       })
     },
-    deleteData ({ commit, dispatch }, { name, id }) {
-      return API.remove(name, id).then((data) => {
-        dispatch('cascadeDelete', { name, id })
+    deleteData ({ commit, state, dispatch }, { name, id }) {
+      return api(name, state.token, id, 'DELETE').then((data) => {
         commit('DELETE_DATA_BY_ID', { name, id })
+        dispatch('cascadeDelete', { name, id })
         return null
       })
     },
@@ -105,29 +114,34 @@ export default new Vuex.Store({
       if (name === 'territories') {
         state.npvs.forEach((npv) => {
           if (npv.territoryId === id) {
-            API.remove('npvs', npv.id)
             commit('DELETE_DATA_BY_ID', { name: 'npvs', id: npv.id })
           }
         })
         state.withdrawals.forEach((withdrawal) => {
           if (withdrawal.territoryId === id) {
-            API.remove('withdrawals', withdrawal.id)
             commit('DELETE_DATA_BY_ID', { name: 'withdrawals', id: withdrawal.id })
           }
         })
       }
     },
     createPassword ({ commit, dispatch }, password) {
-      return new Promise((resolve, reject) => {
-        console.log('createPassword')
-        resolve(true)
-      })
+      return axios.post('/api/register', { password })
+        .then(({ data }) => {
+          commit('SET_DATA', { name: 'token', data: data.token })
+          dispatch('fetchAll')
+          return data
+        })
     },
-    checkPassword ({ state, commit, dispatch }, password) {
-      return new Promise((resolve, reject) => {
-        console.log('checkPassword')
-        resolve(true)
-      })
+    checkPassword ({ commit, dispatch }, password) {
+      return axios.post('/api/login', { password })
+        .then(({ data }) => {
+          commit('SET_DATA', { name: 'token', data: data.token })
+          dispatch('fetchAll')
+          return data
+        })
+    },
+    needCreatePassword () {
+      return api('nuser')
     },
     export ({ state }, { format, password }) {
       if (format === 's13') {
@@ -179,10 +193,10 @@ export default new Vuex.Store({
       return needUserCheck
     },
     setPref ({ commit, state }, { key, val }) {
-      const data = { ...state.preferences[0], [key]: val }
-      return new Promise((resolve, reject) => {
-        console.log('setPref', data)
-      })
+      const data = { ...state.preferences, [key]: val }
+      localStorage.setItem('prefs', JSON.stringify(data))
+      commit('SET_DATA', { name: 'preferences', data })
+      return Promise.resolve(data)
     }
   },
   getters: {

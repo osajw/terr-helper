@@ -46,13 +46,13 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.auth)) {
-    if (!store.state.password) {
+    if (!store.state.token) {
       next({ path: '/password' })
     } else {
       next()
     }
   } else if (to.matched.some(record => record.meta.noAuth)) {
-    if (store.state.password) {
+    if (store.state.token) {
       next({ path: '/' })
     } else {
       next()

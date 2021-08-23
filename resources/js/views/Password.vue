@@ -3,7 +3,7 @@
     <v-overlay :value="true">
       <v-progress-circular v-if="!ready" indeterminate color="primary" />
       <v-slide-y-transition>
-        <v-card v-if="ready && pref.password" outlined>
+        <v-card v-if="ready && !needPassword" outlined>
           <v-card-title class="headline">Entrer votre mot de passe :</v-card-title>
           <v-form ref="loginForm" v-model="isFormLoginValid" @submit.prevent="login">
             <v-text-field
@@ -28,7 +28,7 @@
         </v-card>
       </v-slide-y-transition>
       <v-slide-y-transition>
-        <v-card v-if="ready && !pref.password" outlined>
+        <v-card v-if="ready && needPassword" outlined>
           <v-card-title class="headline">Créer un mot de passe :</v-card-title>
           <v-card-text>
             <span class="info">Le mot de passe sera utilisé à chaque fois que vous ouvrirez l'application. <b>Le mot de passe ne pourra PAS être changé</b></span>
@@ -52,7 +52,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import { mdiLock } from '@mdi/js'
 
 export default {
@@ -64,6 +63,8 @@ export default {
         password: '',
         c_password: ''
       },
+      ready: false,
+      needPassword: false,
       isFormRegisterValid: false,
       isFormLoginValid: false,
       loginShowMore: false,
@@ -81,12 +82,6 @@ export default {
       errPwd: ''
     }
   },
-  computed: {
-    ...mapState(['preferences', 'password', 'ready']),
-    pref () {
-      return this.preferences[0] || {}
-    }
-  },
   watch: {
     ready () {
       if (this.ready) {
@@ -94,21 +89,26 @@ export default {
       }
     }
   },
+  mounted () {
+    this.$store.dispatch('needCreatePassword').then(val => {
+      this.needPassword = !val
+      this.ready = true
+    })
+  },
   methods: {
     createAccount () {
       if (!this.isFormRegisterValid) { return }
-      this.$store.dispatch('createPassword', this.form.password).then((ok) => {
+      this.$store.dispatch('createPassword', this.form.password).then((res) => {
+        if (res.password) {
+          return alert(res.password.join(','))
+        }
         this.$router.push({ path: '/' })
       })
     },
     login () {
-      this.$store.dispatch('checkPassword', this.form.password).then((ok) => {
-        if (ok) {
-          this.$router.push({ path: '/' })
-        } else {
-          this.errPwd = 'Mauvais mot de passe'
-        }
-      })
+      this.$store.dispatch('checkPassword', this.form.password).then(() => {
+        this.$router.push({ path: '/' })
+      }).catch(() => (this.errPwd = 'Mauvais mot de passe'))
     }
   }
 }

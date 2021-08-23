@@ -152,7 +152,7 @@ export default new Vuex.Store({
         fields.forEach((field) => {
           json[field] = []
           state[field].forEach((obj) => {
-            json[field].push(encryptObj({ ...obj }, password))
+            json[field].push(password ? encryptObj({ ...obj }, password) : obj)
           })
         })
         json.exportAt = new Date()

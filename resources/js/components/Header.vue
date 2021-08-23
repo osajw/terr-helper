@@ -65,6 +65,10 @@
         </v-toolbar>
         <v-card-text>
           <v-text-field v-model="aPassword" label="Mot de passe" />
+          <template v-if="isExport">
+            <p v-if="aPassword" class="green--text">Le fichier sera crypté !</p>
+            <p v-else class="red--text">Sans mot de passe, le fichier ne sera pas crypté !</p>
+          </template>
         </v-card-text>
         <v-card-actions>
           <v-btn class="mr-4" color="success" @click="validPassword">Valider</v-btn>
@@ -88,6 +92,7 @@ export default {
       mdiFileCodeOutline,
       loading: false,
       dataToCheck: [],
+      isExport: false,
       dialogPassword: false,
       aPassword: ''
     }
@@ -112,6 +117,7 @@ export default {
       this.loading = true
       this.$store.dispatch('import', () => {
         this.dialogPassword = true
+        this.isExport = false
         return new Promise((resolve, reject) => {
           this._resolvePassord = resolve
         })
@@ -127,6 +133,7 @@ export default {
     exportData (format) {
       if (format === 'json') {
         this.dialogPassword = true
+        this.isExport = true
         this._resolvePassord = (password) => {
           this.$store.dispatch('export', { format, password }).then(() => {
             this.dialogPassword = false
@@ -173,6 +180,13 @@ export default {
   &_vmenu {
     .colored {
       color: var(--v-anchor-base);
+    }
+    .v-list-item {
+      cursor: pointer;
+      transition: .5s ease all;
+      &:hover {
+        background-color: #F5F5F5;
+      }
     }
   }
   &__DialogDataToCheck, &__DialogPassword {

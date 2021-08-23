@@ -18,6 +18,11 @@
           <v-form ref="form" class="BasicForm" v-model="valid" lazy-validation>
             <v-text-field v-model="form.name" :rules="nameRules" label="Nom :" required />
             <v-textarea v-model="form.desc" label="Description :" rows="2" auto-grow />
+            <v-slider v-model="form.difficulty" label="Difficulté :" :max="10" class="align-center">
+              <template v-slot:append>
+                <v-text-field :value="form.difficulty" class="mt-0 pt-0" type="number" style="width: 60px" readonly />
+              </template>
+            </v-slider>
           </v-form>
           <h4>Personnes à ne pas visiter :</h4>
           <div class="npvs">
@@ -161,7 +166,7 @@ export default {
     getForm () {
       if (this.visibility) { this.npvsToUpdate = [] } // reset npv updated
       if (this.id === 'new') {
-        this.form = {}
+        this.form = { difficulty: 5 }
       } else {
         this.form = { ...this.territories.find(t => t.id === this.id) || {} }
       }

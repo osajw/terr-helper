@@ -14,8 +14,8 @@ class CreateNpvsTable extends Migration
     public function up()
     {
         Schema::create('npvs', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('territoryId')
+            $table->uuid('id')->primary();
+            $table->foreignUuid('territoryId')
                 ->constrained('territories')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');

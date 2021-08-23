@@ -14,12 +14,12 @@ class CreateWithdrawalsTable extends Migration
     public function up()
     {
         Schema::create('withdrawals', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('territoryId')
+            $table->uuid('id')->primary();
+            $table->foreignUuid('territoryId')
                 ->constrained('territories')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->foreignId('peopleId')
+            $table->foreignUuid('peopleId')
                 ->constrained('peoples');
             $table->date('outAt')->nullable();
             $table->date('inAt')->nullable();

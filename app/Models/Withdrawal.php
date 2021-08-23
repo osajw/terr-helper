@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\Uuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Withdrawal extends Model
 {
-    use HasFactory;
+    use Uuids, HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -15,8 +16,8 @@ class Withdrawal extends Model
      * @var array
      */
     protected $fillable = [
-        'territory_id',
-        'people_id',
+        'territoryId',
+        'peopleId',
         'outAt',
         'inAt',
     ];

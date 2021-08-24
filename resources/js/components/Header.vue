@@ -27,6 +27,9 @@
     <v-dialog :value="dataToUpdate" content-class="Header__DialogDataToCheck" transition="dialog-bottom-transition" fullscreen hide-overlay>
       <v-card>
         <v-toolbar color="primary" dense dark>
+          <v-btn icon dark @click="dataToCheck = []">
+            <v-icon>{{ mdiClose }}</v-icon>
+          </v-btn>
           <v-toolbar-title>Vérificaton</v-toolbar-title>
         </v-toolbar>
         <v-card-text>Données importées mais modifiées plus récemment par vous :</v-card-text>
@@ -78,12 +81,13 @@
 </template>
 
 <script>
-import { mdiThemeLightDark, mdiDotsVertical, mdiDownloadOutline, mdiFilePdf, mdiFileCodeOutline } from '@mdi/js'
+import { mdiClose, mdiThemeLightDark, mdiDotsVertical, mdiDownloadOutline, mdiFilePdf, mdiFileCodeOutline } from '@mdi/js'
 
 export default {
   name: 'Header',
   data () {
     return {
+      mdiClose,
       mdiThemeLightDark,
       mdiDotsVertical,
       mdiDownloadOutline,

@@ -43,6 +43,8 @@
             <v-icon v-if="terr.outAt || terr.inAt">{{ mdiCalendar }}</v-icon>
             <span v-if="terr.outAt"> {{ $formatDate(terr.outAt) }}</span>
             <span v-if="terr.inAt"> - {{ $formatDate(terr.inAt) }}</span>
+            <span v-if="terr.inAt"> ({{ terr.daysIn }}) jour{{ terr.daysIn>1?'s':'' }}</span>
+            <span v-else-if="terr.outAt"> ({{ terr.daysOut }}) jour{{ terr.daysOut>1?'s':'' }}</span>
             <template v-if="terr.by && !terr.inAt">
               <br>
               <v-icon>{{ mdiAccount }}</v-icon>

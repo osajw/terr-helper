@@ -220,14 +220,18 @@ export default new Vuex.Store({
         const lastUpdate = last ? new Date(last.updateAt) : null
         const updateAt = new Date(t.updateAt)
         const npvs = state.npvs.filter(n => n.territoryId === t.id)
+        const daysIn = last && last.inAt ? dateHelper.$dateDaysDiff(new Date(last.inAt), today) : 0
+        const daysOut = last && last.outAt ? dateHelper.$dateDaysDiff(new Date(last.outAt), today) : 0
         return {
           ...t,
           lastUpdate: (lastUpdate && lastUpdate > updateAt) ? updateAt : lastUpdate,
           inAt: last ? last.inAt : null,
           outAt: last ? last.outAt : null,
+          daysIn,
+          daysOut,
           by: last ? state.peoples.find(p => p.id === last.peopleId) : undefined,
-          needOut: !withdrawals.length || (last.inAt && dateHelper.$dateDaysDiff(new Date(last.inAt), today) > 4 * 31),
-          needIn: last ? !last.inAt && dateHelper.$dateDaysDiff(new Date(last.outAt), today) > 4 * 31 : false,
+          needOut: !withdrawals.length || (last.inAt && daysIn > 4 * 31),
+          needIn: last ? !last.inAt && daysOut > 4 * 31 : false,
           withdrawals,
           npvs
         }

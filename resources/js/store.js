@@ -167,7 +167,7 @@ export default new Vuex.Store({
       }
       return Promise.resolve()
     },
-    async import ({ state, commit }, [probCb, openPasswordDialog]) {
+    async import ({ state, commit }, openPasswordDialog) {
       const json = await openFile('.json')
       if (!json) { return [] }
       const password = await openPasswordDialog()

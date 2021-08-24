@@ -26,6 +26,7 @@ Route::get('user', [UserController::class, 'getAuthenticatedUser']);
 Route::get('nuser', [UserController::class, 'getNumberOfUser']);
 
 Route::group(['middleware' => ['jwt.verify']], function() {
+    Route::post('/import', [DataController::class, 'import']);
     Route::get('/{type}', [DataController::class, 'index']);
     Route::get('/{type}/{id}', [DataController::class, 'show']);
     Route::post('/{type}', [DataController::class, 'store']);

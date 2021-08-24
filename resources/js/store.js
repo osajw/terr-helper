@@ -167,30 +167,20 @@ export default new Vuex.Store({
       }
       return Promise.resolve()
     },
-    async import ({ state, dispatch }, openPasswordDialog) {
+    async import ({ state, commit }, [probCb, openPasswordDialog]) {
       const json = await openFile('.json')
       if (!json) { return [] }
       const password = await openPasswordDialog()
-      delete json.exportAt
-      const promises = []
-      const needUserCheck = []
-      Object.keys(json).forEach((name) => {
-        for (let i = 0; i < json[name].length; i++) {
-          const data = decryptObj(json[name][i], password)
-          const id = data.id
-          if (!state[name]) { return } // bad property name
-          const oldData = state[name].find(s => s.id === id)
-          if (!oldData) {
-            promises.push(dispatch('createData', { name, data, noUpdateAt: true }))
-          } else if (new Date(data.updateAt) >= new Date(oldData.updateAt)) {
-            promises.push(dispatch('updateData', { name, data, noUpdateAt: true }))
-          } else {
-            needUserCheck.push({ data, name })
-          }
-        }
-      })
-      await Promise.all(promises)
-      return needUserCheck
+      const types = ['territories', 'peoples', 'withdrawals', 'npvs']
+      if (password) { // decrypt data
+        types.forEach((type) => {
+          json[type] = json[type].map(el => decryptObj(el, password))
+        })
+      }
+      const data = await api('import', state.token, '', 'POST', json)
+      types.forEach(name => data.out[name].forEach(data =>
+        commit('UPDATE_DATA', { name, data, upsert: true }) ))
+      return data.needUserCheck || []
     },
     setPref ({ commit, state }, { key, val }) {
       const data = { ...state.preferences, [key]: val }
@@ -217,8 +207,8 @@ export default new Vuex.Store({
           return tA.getTime() - tB.getTime()
         })
         const last = withdrawals.slice(-1)[0]
-        const lastUpdate = last ? new Date(last.updateAt) : null
-        const updateAt = new Date(t.updateAt)
+        const lastUpdate = last ? new Date(last.updated_at) : null
+        const updateAt = new Date(t.updated_at)
         const npvs = state.npvs.filter(n => n.territoryId === t.id)
         const daysIn = last && last.inAt ? dateHelper.$dateDaysDiff(new Date(last.inAt), today) : 0
         const daysOut = last && last.outAt ? dateHelper.$dateDaysDiff(new Date(last.outAt), today) : 0

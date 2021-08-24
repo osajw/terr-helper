@@ -8,6 +8,7 @@ use App\Models\Territory;
 use App\Models\People;
 use App\Models\Withdrawal;
 use App\Models\Npv;
+use Carbon\Carbon;
 
 class DataController extends Controller
 {
@@ -141,5 +142,66 @@ class DataController extends Controller
         }
         $model::destroy($id);
         return response()->json(['message' => 'Deleted']);
+    }
+
+    /** Import */
+    public function import(Request $request)
+    {
+        $types = array_keys($this->models);
+        $data = $request->only($types);
+        $out = ['territories' => [], 'peoples' => [], 'withdrawals' => [], 'npvs' => []];
+        $needUserCheck = [];
+        
+        $uuidCores = [];
+        $setData = function ($type, $idFields = [], $dateFields = []) use (&$data, &$out, &$needUserCheck, &$uuidCores) {
+            if (!array_key_exists($type, $data)) { return; }
+            $model = $this->getModel($type);
+            if (!$model) { return; }
+            for ($i=0; $i < count($data[$type]); $i++) {
+                $el = $data[$type][$i];
+                foreach ($idFields as $field) { // set real id
+                    if (array_key_exists($field, $el) && array_key_exists($el[$field], $uuidCores)) {
+                        $el[$field] = $uuidCores[$el[$field]];
+                    }
+                }
+                foreach ($this->dateFields[$type] as $field) { // set date
+                    if (array_key_exists($field, $el) && $el[$field]) {
+                        $el[$field] = Carbon::parse($el[$field]);
+                    }
+                }
+                $oldEl = $model::find($el['id']);
+                // if ($oldEl) { $uuidCores[$el['id']] = $oldEl['id']; }
+                if (!$oldEl) { // > create
+                    $validations = $this->validations[$type]; // validations
+                    $validator = Validator::make($el, $validations);
+                    if ($validator->fails()) { return response()->json($validator->errors()->toJson() , 400); }
+
+                    $newEl = $model::create($el);
+                    $uuidCores[$el['id']] = $newEl['id'];
+                    array_push($out[$type], $newEl);
+                } else if (Carbon::parse($el['updated_at'])->greaterThanOrEqualTo(Carbon::parse($oldEl['updated_at']))) { // > recent update
+                    unset($el['id']);
+                    unset($el['created_at']);
+                    unset($el['updated_at']);
+                    
+                    $validations = $this->validations[$type]; // validations
+                    foreach ($validations as $key => $value) { $validations[$key] = str_replace('required|', '', $value); }
+                    $validator = Validator::make($el, $validations);
+                    if ($validator->fails()) { return response()->json($validator->errors()->toJson() , 400); }
+
+                    $oldEl->update($el);
+                    array_push($out[$type], $oldEl);
+                } else { // > update to check
+                    array_push($needUserCheck, ['data' => $el, 'name' => $type]);
+                }
+            }
+        };
+
+        $setData('territories');
+        $setData('peoples');
+        $setData('withdrawals', ['territoryId', 'peopleId']);
+        $setData('npvs', ['territoryId']);
+
+        return response()->json(compact('out', 'needUserCheck'));
     }
 }

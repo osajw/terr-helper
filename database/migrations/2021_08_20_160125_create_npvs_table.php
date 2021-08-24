@@ -20,7 +20,7 @@ class CreateNpvsTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->mediumText('address')->nullable();
-            $table->date('date');
+            $table->date('date')->nullable();
             $table->string('planUrl')->nullable();
             $table->timestamps();
         });

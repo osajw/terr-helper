@@ -44,6 +44,13 @@ class DataController extends Controller
         ],
     ];
 
+    protected $dateFields = [
+        'territories' => [],
+        'peoples' => [],
+        'withdrawals' => ['inAt', 'outAt'],
+        'npvs' => ['date'],
+    ];
+
     protected function getModel($type)
     {
         if (array_key_exists($type, $this->models)) {
@@ -71,6 +78,11 @@ class DataController extends Controller
         }
         $validations = $this->validations[$type];
         $data = $request->only(array_keys($validations));
+        foreach ($this->dateFields[$type] as $field) {
+            if (array_key_exists($field, $data) && $data[$field]) {
+                $data[$field] = Carbon::parse($data[$field]);
+            }
+        }
         $validator = Validator::make($data, $validations);
 
         if ($validator->fails()) {
@@ -103,6 +115,11 @@ class DataController extends Controller
             $validations[$key] = str_replace('required|', '', $value); // rm required
         }
         $data = $request->only(array_keys($validations));
+        foreach ($this->dateFields[$type] as $field) {
+            if (array_key_exists($field, $data) && $data[$field]) {
+                $data[$field] = Carbon::parse($data[$field]);
+            }
+        }
         $validator = Validator::make($data, $validations);
 
         if ($validator->fails()) {

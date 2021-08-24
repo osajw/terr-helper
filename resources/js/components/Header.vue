@@ -1,7 +1,6 @@
 <template>
   <v-app-bar class="Header" hide-on-scroll flat app>
     <v-toolbar-title>{{ $route.meta.title }}</v-toolbar-title>
-    <v-progress-linear :active="loading" :indeterminate="loading" absolute bottom color="primary" />
     <v-spacer></v-spacer>
     <v-btn icon :style="`transform: rotate(${$vuetify.theme.dark ? '18' : '0'}0deg)`" @click="setDarkMode">
       <v-icon>{{ mdiThemeLightDark }}</v-icon>
@@ -35,8 +34,8 @@
           <span class="h c2">{{ dataToUpdate.name }}</span>
           <span class="h">Actuelle</span>
           <span class="h">Importée</span>
-          <span>{{ $formatDate(dataToUpdate.current.updateAt, true, true) }}</span>
-          <span>{{ $formatDate(dataToUpdate.imported.updateAt, true, true) }}</span>
+          <span>{{ $formatDate(dataToUpdate.current.updated_at, true, true) }}</span>
+          <span>{{ $formatDate(dataToUpdate.imported.updated_at, true, true) }}</span>
           <template v-for="key in dataToUpdate.keys">
             <template v-if="['outAt', 'inAt', 'date'].includes(key)">
               <span :key="'a'+key">{{ $formatDate(dataToUpdate.current[key]) }}</span>
@@ -103,10 +102,10 @@ export default {
       const last = this.dataToCheck.slice(-1)[0]
       const trads = { territories: 'Territoires', peoples: 'Personnes', withdrawals: 'Sorties', npvs: 'Personnes à ne pas visiter' }
       const id = last.data.id
-      const current = this.$store.state[last.name].find(s => s.id === id)
+      const current = this.$store.state[last.name].find(s => s.id === id) || {}
       return {
         name: trads[last.name],
-        keys: [...new Set([...Object.keys(current), ...Object.keys(last.data)])].filter(k => !['id', 'updateAt'].includes(k)),
+        keys: [...new Set([...Object.keys(current), ...Object.keys(last.data)])].filter(k => !['id', 'updated_at'].includes(k)),
         current,
         imported: last.data
       }
@@ -119,11 +118,13 @@ export default {
         this.dialogPassword = true
         this.isExport = false
         return new Promise((resolve, reject) => {
-          this._resolvePassord = resolve
+          this._resolvePassord = () => {
+          this.dialogPassword = false
+            resolve()
+          }
         })
       }).then((needUserCheck) => {
         this.loading = false
-        this.dialogPassword = false
         this.aPassword = ''
         if (needUserCheck.length) {
           this.dataToCheck = needUserCheck

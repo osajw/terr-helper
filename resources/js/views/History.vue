@@ -26,7 +26,7 @@
         <v-img v-if="data.type == 'npv' && data.planUrl" :src="data.planUrl" />
         <v-card-actions>
           <v-spacer />
-          <span style="font-size: 14px;"><em>le: {{ $formatDate(data.updateAt, true, true) }}</em></span>
+          <span style="font-size: 14px;"><em>le: {{ $formatDate(data.updated_at, true, true) }}</em></span>
         </v-card-actions>
       </v-card>
     </div>
@@ -53,7 +53,7 @@ export default {
         ...this.territoriesWithInfos.map(t => ({ ...t, type: 'ter' })),
         ...this.npvs.map(t => ({ ...t, type: 'npv' }))
       ].sort((a, b) =>
-        (b.lastUpdate || new Date(b.updateAt)).getTime() - (a.lastUpdate || new Date(a.updateAt)).getTime()
+        (b.lastUpdate || new Date(b.updated_at)).getTime() - (a.lastUpdate || new Date(a.updated_at)).getTime()
       )
     }
   },

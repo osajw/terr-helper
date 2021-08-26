@@ -31,43 +31,53 @@
       <v-icon>{{ mdiPlus }}</v-icon>
     </v-btn>
     <div class="content">
-      <div class="territories">
-        <v-card v-for="terr in territoriesFiltered" :key="terr.id" class="territory" elevation="1" tile>
-          <v-card-title>
-            <span>{{ terr.name }}</span>
-            <v-btn icon @click="showDialogTerritory = true; editTerritoryId = terr.id">
-              <v-icon>{{ mdiPencil }}</v-icon>
-            </v-btn>
-          </v-card-title>
-          <v-card-subtitle>
-            <v-icon v-if="terr.outAt || terr.inAt">{{ mdiCalendar }}</v-icon>
-            <span v-if="terr.outAt"> {{ $formatDate(terr.outAt) }}</span>
-            <span v-if="terr.inAt"> - {{ $formatDate(terr.inAt) }}</span>
-            <span v-if="terr.inAt"> ({{ terr.daysIn }}) jour{{ terr.daysIn>1?'s':'' }}</span>
-            <span v-else-if="terr.outAt"> ({{ terr.daysOut }}) jour{{ terr.daysOut>1?'s':'' }}</span>
-            <template v-if="terr.by && !terr.inAt">
-              <br>
-              <v-icon>{{ mdiAccount }}</v-icon>
-              {{ peopleName(terr.by) }}
-            </template>
-          </v-card-subtitle>
-          <v-card-actions>
-            <v-badge v-if="terr.needOut || terr.inAt" :value="terr.needOut" color="error" overlap dot>
-              <v-btn :x-small="!terr.needOut" color="primary" text @click="inOrOut(terr)">Sortir</v-btn>
-            </v-badge>
-            <v-badge v-if="terr.needIn || (terr.outAt && !terr.inAt)" :value="terr.needIn" color="error" overlap dot>
-              <v-btn :x-small="!terr.needIn" color="accent" text @click="inOrOut(terr, true)">Rentrer</v-btn>
-            </v-badge>
-            <v-spacer />
-            <v-btn icon @click="print(terr)">
-              <v-icon>{{ mdiFileExportOutline }}</v-icon>
-            </v-btn>
-            <v-btn v-if="navShare" icon @click="share(terr)">
-              <v-icon>{{ mdiShareVariant }}</v-icon>
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </div>
+      <v-virtual-scroll :items="territoriesFiltered" :height="height - 64 * 3" bench="3" item-height="160">
+        <template v-slot:default="{ item: terr }">
+          <v-card outlined>
+            <v-list-item three-line>
+              <v-list-item-content>
+                <v-list-item-title class="d-flex flex-nowrap">
+                  <span><b>{{ terr.name }}</b></span>
+                  <v-btn class="ml-2 grey lighten-2" icon x-small>{{ terr.difficulty }}</v-btn>
+                </v-list-item-title>
+                <v-list-item-subtitle class="d-flex flex-nowrap my-2">
+                  <v-chip class="flex-shrink-0 mr-2" outlined>
+                    <v-icon v-if="terr.outAt || terr.inAt">{{ mdiCalendar }}</v-icon>
+                    <span v-if="terr.outAt"> {{ $formatDate(terr.outAt) }}</span>
+                    <span v-if="terr.inAt"> - {{ $formatDate(terr.inAt) }}</span>
+                  </v-chip>
+                  <v-chip v-if="terr.inAt" :color="terr.needOut ? 'red' : 'green'" outlined>{{ terr.daysIn }}j</v-chip>
+                  <v-chip v-else-if="terr.outAt" :color="terr.needIn ? 'red' : 'green'" outlined>{{ terr.daysOut }}j</v-chip>
+                </v-list-item-subtitle>
+                <v-list-item-subtitle class="d-flex flex-nowrap">
+                  <v-btn v-if="terr.needOut || terr.inAt" :color="terr.needOut ? 'warning' :''" :outlined="!terr.needOut" :small="!terr.needOut" @click="inOrOut(terr)">
+                    <span>Sortir</span>
+                    <v-icon small>{{ terr.needOut ? mdiClockAlertOutline : mdiBookArrowRightOutline }}</v-icon>
+                  </v-btn>
+                  <v-btn v-if="terr.needIn || (terr.outAt && !terr.inAt)" :color="terr.needIn ? 'warning' :''" :outlined="!terr.needIn" :small="!terr.needIn" @click="inOrOut(terr, true)">
+                    <span>Rentrer</span>
+                    <v-icon small>{{ terr.needIn ? mdiClockAlertOutline : mdiBookArrowLeftOutline }}</v-icon>
+                  </v-btn>
+                  <span v-if="terr.by && !terr.inAt" class="flex-shrink-0 ml-2">
+                    <v-icon>{{ mdiAccount }}</v-icon> {{ peopleName(terr.by) }}
+                  </span>
+                </v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-btn icon @click="showDialogTerritory = true; editTerritoryId = terr.id">
+                  <v-icon>{{ mdiPencil }}</v-icon>
+                </v-btn>
+                <v-btn icon @click="print(terr)">
+                  <v-icon>{{ mdiFileExportOutline }}</v-icon>
+                </v-btn>
+                <v-btn icon @click="share(terr)">
+                  <v-icon>{{ mdiShareVariant }}</v-icon>
+                </v-btn>
+              </v-list-item-action>
+            </v-list-item>
+          </v-card>
+        </template>
+      </v-virtual-scroll>
     </div>
     <v-dialog v-model="showDialogSelectUser" max-width="600px" transition="dialog-bottom-transition" fullscreen hide-overlay>
       <v-card>
@@ -115,7 +125,7 @@
 </template>
 
 <script>
-import { mdiRedoVariant, mdiCalendar, mdiMagnify, mdiClose, mdiAccount, mdiPencil, mdiPlus, mdiFileExportOutline, mdiShareVariant } from '@mdi/js'
+import { mdiRedoVariant, mdiCalendar, mdiMagnify, mdiClose, mdiAccount, mdiPencil, mdiPlus, mdiFileExportOutline, mdiShareVariant, mdiClockAlertOutline, mdiBookArrowRightOutline, mdiBookArrowLeftOutline } from '@mdi/js'
 import { mapState, mapGetters } from 'vuex'
 import { printTerr } from '../utilities/print'
 import DialogWithdrawal from '../components/DialogWithdrawal'
@@ -138,8 +148,11 @@ export default {
       mdiPlus,
       mdiFileExportOutline,
       mdiShareVariant,
+      mdiClockAlertOutline,
+      mdiBookArrowRightOutline,
+      mdiBookArrowLeftOutline,
       today: new Date(),
-      height: document.body.offsetHeight,
+      height: window.innerHeight,
       filter: '',
       showDialogWithdrawal: false,
       editWithdrawalId: '',
@@ -259,34 +272,40 @@ export default {
     z-index: 99;
   }
   .content {
-    padding: max(58px, 6vw) 0 58px 0;
-    .territories {
-      max-width: 1200px;
-      margin: auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 10px;
-      .territory {
-        .v-card__title {
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) 24px;
-          padding-bottom: 4px;
-          > span {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: block;
-          }
-          .v-btn {
-            flex-shrink: 0;
-          }
-        }
-        .v-card__subtitle {
-          padding-bottom: 0;
-          margin-top: 0;
-        }
+    padding-top: 64px;
+    .v-virtual-scroll {
+      .v-card {
+        max-width: 600px;
+        margin: auto;
       }
     }
+    // .territories {
+    //   max-width: 1200px;
+    //   margin: auto;
+    //   display: grid;
+    //   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    //   gap: 10px;
+    //   .territory {
+    //     .v-card__title {
+    //       display: grid;
+    //       grid-template-columns: minmax(0, 1fr) 24px;
+    //       padding-bottom: 4px;
+    //       > span {
+    //         white-space: nowrap;
+    //         overflow: hidden;
+    //         text-overflow: ellipsis;
+    //         display: block;
+    //       }
+    //       .v-btn {
+    //         flex-shrink: 0;
+    //       }
+    //     }
+    //     .v-card__subtitle {
+    //       padding-bottom: 0;
+    //       margin-top: 0;
+    //     }
+    //   }
+    // }
   }
 }
 </style>

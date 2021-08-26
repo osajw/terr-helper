@@ -31,7 +31,21 @@
       <v-icon>{{ mdiPlus }}</v-icon>
     </v-btn>
     <div class="content">
-      <v-virtual-scroll :items="territoriesFiltered" :height="height - 64 * 3" bench="3" item-height="160">
+      <v-card :outlined="$vuetify.theme.dark" class="filters-2" elevation="0">
+        <v-chip-group show-arrows>
+          <span class="ml-2 mr-4">Trier par:</span>
+          <v-chip :color="shortBy == 'name' ? 'green' : 'grey'" text-color="#fff" label link @click="setShortBy('name')">
+            Nom <v-btn v-if="shortBy == 'name'" icon x-small dark><v-icon>{{ shortDesc ? mdiChevronDown : mdiChevronUp }}</v-icon></v-btn>
+          </v-chip>
+          <v-chip :color="shortBy == 'difficulty' ? 'green' : 'grey'" text-color="#fff" label link @click="setShortBy('difficulty')">
+            Difficulté <v-btn v-if="shortBy == 'difficulty'" icon x-small dark><v-icon>{{ shortDesc ? mdiChevronDown : mdiChevronUp }}</v-icon></v-btn>
+          </v-chip>
+          <v-chip :color="shortBy == 'days' ? 'green' : 'grey'" text-color="#fff" label link @click="setShortBy('days')">
+            Date <v-btn v-if="shortBy == 'days'" icon x-small dark><v-icon>{{ shortDesc ? mdiChevronDown : mdiChevronUp }}</v-icon></v-btn>
+          </v-chip>
+        </v-chip-group>
+      </v-card>
+      <v-virtual-scroll :items="territoriesSorted" :height="height - 64 * 4" bench="3" item-height="160">
         <template v-slot:default="{ item: terr }">
           <v-card outlined>
             <v-list-item three-line>
@@ -125,7 +139,7 @@
 </template>
 
 <script>
-import { mdiRedoVariant, mdiCalendar, mdiMagnify, mdiClose, mdiAccount, mdiPencil, mdiPlus, mdiFileExportOutline, mdiShareVariant, mdiClockAlertOutline, mdiBookArrowRightOutline, mdiBookArrowLeftOutline } from '@mdi/js'
+import { mdiRedoVariant, mdiCalendar, mdiMagnify, mdiClose, mdiAccount, mdiPencil, mdiPlus, mdiFileExportOutline, mdiShareVariant, mdiClockAlertOutline, mdiBookArrowRightOutline, mdiBookArrowLeftOutline, mdiChevronDown, mdiChevronUp } from '@mdi/js'
 import { mapState, mapGetters } from 'vuex'
 import { printTerr } from '../utilities/print'
 import DialogWithdrawal from '../components/DialogWithdrawal'
@@ -151,9 +165,13 @@ export default {
       mdiClockAlertOutline,
       mdiBookArrowRightOutline,
       mdiBookArrowLeftOutline,
+      mdiChevronDown,
+      mdiChevronUp,
       today: new Date(),
       height: window.innerHeight,
       filter: '',
+      shortBy: 'name',
+      shortDesc: false,
       showDialogWithdrawal: false,
       editWithdrawalId: '',
       showDialogPeople: false,
@@ -200,8 +218,20 @@ export default {
       }
       return terrs
     },
-    navShare () {
-      return navigator.share
+    territoriesSorted () {
+      const shortBy = this.shortBy
+      const shortDesc = this.shortDesc
+      let terrs = [...this.territoriesFiltered].sort((a,b) => a.name.localeCompare(b.name)) // default by name
+      if (!shortBy) { return terrs }
+      terrs = terrs.sort((a, b) => {
+        if (shortBy === 'difficulty') { return a.difficulty - b.difficulty }
+        if (shortBy === 'days') {
+          return (a.inAt ? a.daysIn : (a.outAt ? a.daysOut : -1)) -
+            (b.inAt ? b.daysIn : (b.outAt ? b.daysOut : -1))
+        }
+        return 0
+      })
+      return shortDesc ? terrs.reverse() : terrs
     }
   },
   methods: {
@@ -215,6 +245,19 @@ export default {
       this.setIn = toIn
       this.setOut = !toIn
       this.showDialogWithdrawal = true
+    },
+    setShortBy (type) {
+      if (this.shortBy === type) {
+        if (!this.shortDesc) {
+          this.shortDesc = true
+        } else {
+          this.shortDesc = false
+          this.shortBy = 'name' // default
+        }
+      } else {
+        this.shortBy = type
+        this.shortDesc = false
+      }
     },
     print (terr) {
       printTerr(terr)
@@ -242,14 +285,25 @@ export default {
 
 <style lang="scss">
 .Territory {
+  .v-main__wrap {
+    padding: 0;
+  }
+  .filters, .filters-2 {
+    z-index: 1;
+    .v-slide-group__next, .v-slide-group__prev {
+      min-width: 20px;
+    }
+  }
   .filters {
     position: fixed;
     bottom: 56px;
     left: 0;
     right: 0;
-    z-index: 1;
-    .v-slide-group__next, .v-slide-group__prev {
-      min-width: 20px;
+  }
+  .filters-2 {
+    padding: 10px 10px 0 10px;
+    .v-slide-group__content {
+      align-items: center;
     }
   }
   .v-toolbar {
@@ -279,33 +333,6 @@ export default {
         margin: auto;
       }
     }
-    // .territories {
-    //   max-width: 1200px;
-    //   margin: auto;
-    //   display: grid;
-    //   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    //   gap: 10px;
-    //   .territory {
-    //     .v-card__title {
-    //       display: grid;
-    //       grid-template-columns: minmax(0, 1fr) 24px;
-    //       padding-bottom: 4px;
-    //       > span {
-    //         white-space: nowrap;
-    //         overflow: hidden;
-    //         text-overflow: ellipsis;
-    //         display: block;
-    //       }
-    //       .v-btn {
-    //         flex-shrink: 0;
-    //       }
-    //     }
-    //     .v-card__subtitle {
-    //       padding-bottom: 0;
-    //       margin-top: 0;
-    //     }
-    //   }
-    // }
   }
 }
 </style>

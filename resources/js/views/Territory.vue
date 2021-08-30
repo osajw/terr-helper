@@ -32,7 +32,7 @@
           <v-chip :color="shortBy == 'days' ? 'green' : 'grey'" text-color="#fff" label link @click="setShortBy('days')">
             Date <v-btn v-if="shortBy == 'days'" icon x-small dark><v-icon>{{ shortDesc ? mdiChevronDown : mdiChevronUp }}</v-icon></v-btn>
           </v-chip>
-          <v-chip link @click="search ? search = '' : showSearch = true">
+          <v-chip link @click="openSearch">
             <v-icon>{{ mdiMagnify }}</v-icon><span v-if="search">"{{ search }}"<v-icon>{{ mdiClose }}</v-icon></span>
           </v-chip>
         </v-chip-group>
@@ -152,7 +152,7 @@
     </v-dialog>
     <v-dialog v-model="showSearch" content-class="Territory__search" hide-overlay>
       <v-card>
-        <v-text-field v-model="search" placeholder="Recherche" @blur="onSearchBlur" />
+        <v-text-field v-model="search" ref="searchInput" placeholder="Recherche" @blur="onSearchBlur" @keydown="onSearchKey" />
         <v-btn icon @click="search = ''; showSearch = false">
           <v-icon>{{ mdiClose }}</v-icon>
         </v-btn>
@@ -319,8 +319,19 @@ export default {
         printTerr(terr, people)
       }
     },
+    openSearch () {
+      if (this.search) { return (this.search = '') }
+      this.showSearch = true
+      setTimeout(() => this.$refs.searchInput.focus(), 10)
+    },
     onSearchBlur () {
       this.showSearch = !this.search
+    },
+    onSearchKey (ev) {
+      if (ev.key === 'Escape') {
+        this.search = ''
+        this.showSearch = false
+      }
     },
     toggleFilterOutBy () {
       if (this.filter === 'outBy') {

@@ -88,16 +88,20 @@
     <v-dialog v-model="showDialogSelectUser" max-width="600px" transition="dialog-bottom-transition" fullscreen hide-overlay>
       <v-card>
         <v-toolbar color="primary" dense dark>
-          <v-btn icon dark @click="showDialogSelectUser = false">
+          <v-btn icon dark @click="showDialogSelectUser = false; filter = ''; searchPeople = ''">
             <v-icon>{{ mdiClose }}</v-icon>
           </v-btn>
           <v-toolbar-title>Trouver une personne</v-toolbar-title>
         </v-toolbar>
-        <v-virtual-scroll :bench="1" :items="peoples" :height="height - 100" item-height="66">
+        <v-text-field v-model="searchPeople" placeholder="Recherche" class="mx-4" clearable />
+        <v-virtual-scroll :bench="1" :items="filteredPeoples" :height="height - 175" item-height="66">
           <template v-slot:default="{ item }">
-            <v-list-item :key="item.id" @click="selectedUser = item.id; showDialogSelectUser = false" style="height: 66px">
+            <v-list-item :key="item.id" @click="selectedUser = item.id; showDialogSelectUser = false; searchPeople = ''" style="height: 66px">
               <v-list-item-content>
-                <v-list-item-title><v-icon>{{ mdiAccount }}</v-icon> {{ peopleName(item) }}</v-list-item-title>
+                <v-list-item-title>
+                  <v-icon>{{ mdiAccount }}</v-icon> {{ peopleName(item) }}
+                  <v-chip>{{ nOutBy(item) }}</v-chip>
+                </v-list-item-title>
                 <v-list-item-subtitle>
                   <span v-if="item.email">{{ item.email }}</span>
                   <span v-if="item.phone && item.email"> | </span>
@@ -105,7 +109,7 @@
                 </v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-action>
-                <v-icon small @click.stop="showDialogPeople = true; editPeopleId = item.id">{{ mdiPencil }}</v-icon>
+                <v-icon small @click.stop="showDialogPeople = true; editPeopleId = item.id; searchPeople = ''">{{ mdiPencil }}</v-icon>
               </v-list-item-action>
             </v-list-item>
             <v-divider />
@@ -113,8 +117,8 @@
         </v-virtual-scroll>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="success" text @click="showDialogPeople = true; editPeopleId = 'new'">Ajouter</v-btn>
-          <v-btn color="warning" text @click="showDialogSelectUser = false; filter = ''">Annuler</v-btn>
+          <v-btn color="warning" text @click="showDialogSelectUser = false; filter = ''; searchPeople = ''">Annuler</v-btn>
+          <v-btn color="success" text @click="showDialogPeople = true; editPeopleId = 'new'; searchPeople = ''">Ajouter</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -124,7 +128,7 @@
         <v-card-text>
           <v-autocomplete
             v-model="selectedPeopleId"
-            :items="peoples"
+            :items="sortedPeoples"
             :item-text="peopleName"
             label="Personne :"
             item-value="id"
@@ -202,6 +206,7 @@ export default {
       shortDesc: false,
       showDialogWithdrawal: false,
       editWithdrawalId: '',
+      searchPeople: '',
       showDialogPeople: false,
       editPeopleId: '',
       territoryId: '',
@@ -229,6 +234,14 @@ export default {
         return obj
       }, {})
     },
+    sortedPeoples () {
+      return [...this.peoples].sort((a, b) => this.peopleName(a).localeCompare(this.peopleName(b)))
+    },
+    filteredPeoples () {
+      const search = (this.searchPeople || '').toLowerCase()
+      if (!search) { return this.sortedPeoples }
+      return this.sortedPeoples.filter(p => this.peopleName(p).toLowerCase().includes(search))
+    },
     territoriesFiltered () {
       let terrs = this.territoriesWithInfos
       if (this.search) {
@@ -246,7 +259,7 @@ export default {
         )
       }
       if (this.filter === 'outBy') {
-        return terrs.filter(t => t.by && t.by.id === this.selectedUser)
+        return terrs.filter(t => !t.inAt && t.by && t.by.id === this.selectedUser)
       }
       return terrs
     },
@@ -317,6 +330,9 @@ export default {
         this.filter = 'outBy'
         this.showDialogSelectUser = true
       }
+    },
+    nOutBy ({ id }) {
+      return this.territoriesWithInfos.filter(t => !t.inAt && t.by && t.by.id === id).length
     },
     peopleName (people) {
       return people ? `${people.firstname} ${people.lastname}` : 'Personne supprimée'

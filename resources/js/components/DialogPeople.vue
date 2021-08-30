@@ -11,7 +11,7 @@
         <v-btn icon dark @click="dialog = false">
           <v-icon>{{ mdiClose }}</v-icon>
         </v-btn>
-        <v-toolbar-title>{{ id == 'new' ? 'Créer' : 'Modifier' }} un personne</v-toolbar-title>
+        <v-toolbar-title>{{ id == 'new' ? 'Créer' : 'Modifier' }} une personne</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-container>

@@ -16,17 +16,6 @@
         </v-chip>
       </v-chip-group>
     </v-card>
-    <v-app-bar :collapse="collapseBar" flat inverted-scroll app>
-      <v-btn v-show="collapseBar" icon @click="collapseBar = false">
-        <v-icon>{{ mdiMagnify }}</v-icon>
-      </v-btn>
-      <v-toolbar-title>
-        <input v-model="search" placeholder="Recherche" @blur="onSearchBlur" />
-        <v-btn icon @click="search = ''; collapseBar = true">
-          <v-icon>{{ mdiClose }}</v-icon>
-        </v-btn>
-      </v-toolbar-title>
-    </v-app-bar>
     <v-btn class="fab-btn" color="primary" elevation="2" small fab @click="showDialogTerritory = true; editTerritoryId = 'new'">
       <v-icon>{{ mdiPlus }}</v-icon>
     </v-btn>
@@ -42,6 +31,9 @@
           </v-chip>
           <v-chip :color="shortBy == 'days' ? 'green' : 'grey'" text-color="#fff" label link @click="setShortBy('days')">
             Date <v-btn v-if="shortBy == 'days'" icon x-small dark><v-icon>{{ shortDesc ? mdiChevronDown : mdiChevronUp }}</v-icon></v-btn>
+          </v-chip>
+          <v-chip link @click="search ? search = '' : showSearch = true">
+            <v-icon>{{ mdiMagnify }}</v-icon><span v-if="search">"{{ search }}"<v-icon>{{ mdiClose }}</v-icon></span>
           </v-chip>
         </v-chip-group>
       </v-card>
@@ -154,6 +146,14 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="showSearch" content-class="Territory__search" hide-overlay>
+      <v-card>
+        <v-text-field v-model="search" placeholder="Recherche" @blur="onSearchBlur" />
+        <v-btn icon @click="search = ''; showSearch = false">
+          <v-icon>{{ mdiClose }}</v-icon>
+        </v-btn>
+      </v-card>
+    </v-dialog>
     <DialogWithdrawal
       :visibility.sync="showDialogWithdrawal"
       :id="editWithdrawalId"
@@ -208,7 +208,7 @@ export default {
       setIn: false,
       setOut: false,
       search: '',
-      collapseBar: true,
+      showSearch: false,
       showDialogTerritory: false,
       editTerritoryId: '',
       wepShareOk: !!navigator.share,
@@ -308,7 +308,7 @@ export default {
       }
     },
     onSearchBlur () {
-      this.collapseBar = !this.search
+      this.showSearch = !this.search
     },
     toggleFilterOutBy () {
       if (this.filter === 'outBy') {
@@ -344,6 +344,8 @@ export default {
   }
   .filters-2 {
     padding: 10px 10px 0 10px;
+    margin-bottom: 12px;
+    border: 0;
     .v-slide-group__content {
       align-items: center;
     }
@@ -368,12 +370,23 @@ export default {
     z-index: 99;
   }
   .content {
-    padding-top: 64px;
     .v-virtual-scroll {
       .v-card {
         max-width: 600px;
         margin: auto;
       }
+    }
+  }
+  &__search {
+    position: absolute;
+    top: 0;
+    max-width: 640px;
+    .v-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
     }
   }
 }

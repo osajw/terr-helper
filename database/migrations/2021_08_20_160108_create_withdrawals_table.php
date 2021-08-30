@@ -24,6 +24,7 @@ class CreateWithdrawalsTable extends Migration
             $table->date('outAt')->nullable();
             $table->date('inAt')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

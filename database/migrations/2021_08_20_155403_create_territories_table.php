@@ -19,6 +19,7 @@ class CreateTerritoriesTable extends Migration
             $table->mediumText('desc')->nullable();
             $table->integer('difficulty')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

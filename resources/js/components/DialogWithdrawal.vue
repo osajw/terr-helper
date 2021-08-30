@@ -76,7 +76,7 @@
 
 <script>
 import { mdiClose, mdiPlus, mdiPencil } from '@mdi/js'
-import { mapState, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 import DialogPickerDialog from './DatePickerDialog'
 import DialogPeople from './DialogPeople'
 import { printTerr } from '../utilities/print'
@@ -122,8 +122,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['territories', 'peoples', 'withdrawals']),
-    ...mapGetters(['territoriesWithInfos']),
+    ...mapGetters(['territories', 'peoples', 'withdrawals', 'territoriesWithInfos']),
     dialog: {
       get () {
         return this.visibility

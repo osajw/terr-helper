@@ -75,7 +75,7 @@
 
 <script>
 import { mdiClose, mdiPencil, mdiAccount, mdiCalendar } from '@mdi/js'
-import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 import DialogNpv from './DialogNpv'
 import DialogWithdrawal from './DialogWithdrawal'
 
@@ -114,7 +114,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['territories', 'npvs', 'peoples', 'withdrawals']),
+    ...mapGetters(['territories', 'npvs', 'peoples', 'withdrawals']),
     dialog: {
       get () {
         return this.visibility

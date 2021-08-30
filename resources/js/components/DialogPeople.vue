@@ -35,7 +35,7 @@
 
 <script>
 import { mdiClose } from '@mdi/js'
-import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'DialogPeople',
@@ -67,7 +67,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['peoples']),
+    ...mapGetters(['peoples']),
     dialog: {
       get () {
         return this.visibility

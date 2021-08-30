@@ -23,6 +23,7 @@ class CreateNpvsTable extends Migration
             $table->date('date')->nullable();
             $table->string('planUrl')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

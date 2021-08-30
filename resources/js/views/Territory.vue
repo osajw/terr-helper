@@ -172,7 +172,7 @@
 
 <script>
 import { mdiRedoVariant, mdiCalendar, mdiMagnify, mdiClose, mdiAccount, mdiPencil, mdiPlus, mdiFileExportOutline, mdiShareVariant, mdiClockAlertOutline, mdiBookArrowRightOutline, mdiBookArrowLeftOutline, mdiChevronDown, mdiChevronUp } from '@mdi/js'
-import { mapState, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 import { printTerr } from '../utilities/print'
 import DialogWithdrawal from '../components/DialogWithdrawal'
 import DialogTerritory from '../components/DialogTerritory'
@@ -225,8 +225,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['territories', 'withdrawals', 'peoples']),
-    ...mapGetters(['territoriesWithInfos']),
+    ...mapGetters(['territories', 'withdrawals', 'peoples', 'territoriesWithInfos']),
     withdrawalsByTerrId () {
       return this.withdrawals.reduce((obj, w) => {
         if (!obj[w.territoryId]) { obj[w.territoryId] = [] }

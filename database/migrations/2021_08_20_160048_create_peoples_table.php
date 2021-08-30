@@ -20,6 +20,7 @@ class CreatePeoplesTable extends Migration
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

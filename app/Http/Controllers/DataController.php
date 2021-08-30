@@ -67,7 +67,7 @@ class DataController extends Controller
         if (!$model) {
             return response()->json(['error' => 'invalid_type'], 400);
         }
-        return response()->json($model::all());
+        return response()->json($model::withTrashed()->get());
     }
 
     /** Store a newly created resource in storage. */
@@ -101,7 +101,7 @@ class DataController extends Controller
         if (!$model) {
             return response()->json(['error' => 'invalid_type'], 400);
         }
-        return $model::find($id);
+        return $model::withTrashed()->find($id);
     }
 
     /** Update the specified resource in storage. */

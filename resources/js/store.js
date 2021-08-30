@@ -226,6 +226,18 @@ export default new Vuex.Store({
           npvs
         }
       })
+    },
+    territories: (state) => {
+      return state.territories.filter(item => !item.deleted_at)
+    },
+    peoples: (state) => {
+      return state.peoples.filter(item => !item.deleted_at)
+    },
+    withdrawals: (state) => {
+      return state.withdrawals.filter(item => !item.deleted_at)
+    },
+    npvs: (state) => {
+      return state.npvs.filter(item => !item.deleted_at)
     }
   },
   modules: {

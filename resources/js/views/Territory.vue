@@ -84,7 +84,7 @@
                 <v-btn icon @click="print(terr)">
                   <v-icon>{{ mdiFileExportOutline }}</v-icon>
                 </v-btn>
-                <v-btn icon @click="share(terr)">
+                <v-btn v-if="wepShareOk" icon @click="share(terr)">
                   <v-icon>{{ mdiShareVariant }}</v-icon>
                 </v-btn>
               </v-list-item-action>
@@ -123,6 +123,34 @@
           <v-spacer />
           <v-btn color="success" text @click="showDialogPeople = true; editPeopleId = 'new'">Ajouter</v-btn>
           <v-btn color="warning" text @click="showDialogSelectUser = false; filter = ''">Annuler</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog :value="dialogSelectPeople" max-width="300" @input="cbSelectPeople()">
+      <v-card>
+        <v-card-title>Envoyer à ?</v-card-title>
+        <v-card-text>
+          <v-autocomplete
+            v-model="selectedPeopleId"
+            :items="peoples"
+            :item-text="peopleName"
+            label="Personne :"
+            item-value="id"
+            clearable
+          >
+            <template v-slot:selection="data">
+              <span>{{ data.item.firstname }} {{ data.item.lastname }}</span>
+            </template>
+          </v-autocomplete>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="warning darken-1" text @click="cbSelectPeople(true)">
+            Annuler
+          </v-btn>
+          <v-btn color="green darken-1" text @click="cbSelectPeople()">
+            Envoyer
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -183,6 +211,10 @@ export default {
       collapseBar: true,
       showDialogTerritory: false,
       editTerritoryId: '',
+      wepShareOk: !!navigator.share,
+      selectedPeopleId: '',
+      dialogSelectPeople: false,
+      cbSelectPeople: () => {},
       showDialogSelectUser: false,
       selectedUser: ''
     }
@@ -259,11 +291,21 @@ export default {
         this.shortDesc = false
       }
     },
+    filterPeoples (people, queryText) {
+      return this.peopleName(people).includes(queryText.toLowerCase())
+    },
     print (terr) {
       printTerr(terr)
     },
     async share (terr) {
-      printTerr(terr, { firstname: '.....' })
+      this.selectedPeopleId = (terr.by || {}).id
+      this.dialogSelectPeople = true
+      this.cbSelectPeople = (cancel) => {
+        this.dialogSelectPeople = false
+        if (cancel) { return }
+        const people = this.peoples.find(p => p.id === this.selectedPeopleId)
+        printTerr(terr, people)
+      }
     },
     onSearchBlur () {
       this.collapseBar = !this.search

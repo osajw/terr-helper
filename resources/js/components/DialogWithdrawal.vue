@@ -18,7 +18,7 @@
           <v-form ref="form" class="BasicForm" v-model="valid" lazy-validation>
             <v-autocomplete
               v-model="form.peopleId"
-              :items="[{ add: true }, ...peoples]"
+              :items="[{ add: true }, ...sortedPeoples]"
               :rules="peopleRules"
               :item-text="getPeoleName"
               label="Sorti par :"
@@ -123,6 +123,9 @@ export default {
   },
   computed: {
     ...mapGetters(['territories', 'peoples', 'withdrawals', 'territoriesWithInfos']),
+    sortedPeoples () {
+      return [...this.peoples].sort((a, b) => this.getPeoleName(a).localeCompare(this.getPeoleName(b)))
+    },
     dialog: {
       get () {
         return this.visibility

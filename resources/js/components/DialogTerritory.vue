@@ -36,7 +36,7 @@
               <v-card-text>
                 <p>{{ npv.address }}</p>
               </v-card-text>
-              <v-img v-if="npv.planUrl" :src="npv.planUrl" />
+              <v-img v-if="npv.planUrl" :src="`./images/${npv.planUrl}`" />
             </v-card>
             <v-btn class="add-npv" depressed @click="createNpv">Ajouter</v-btn>
           </div>

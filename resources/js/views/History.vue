@@ -36,7 +36,7 @@
               <div>{{ data.type }} - <span class="name">{{ terrName(data.territoryId) }}</span></div>
               <v-chip x-small>{{ data.created_at === data.updated_at ? 'Ajout' : ( data.deleted_at ? 'Suppression' : 'Mise à jour') }}</v-chip>
             </div>
-            <v-img v-if="data.planUrl" :src="data.planUrl" />
+            <v-img v-if="data.planUrl" :src="`./images/${data.planUrl}`" />
             <v-chip label small><v-icon left>{{ mdiMapMarker }}</v-icon> {{ data.address }}</v-chip>
           </template>
 

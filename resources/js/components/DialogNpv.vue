@@ -22,7 +22,7 @@
           </v-form>
         </v-container>
       </v-card-text>
-      <v-img v-if="form.planUrl" :src="form.planUrl" />
+      <v-img v-if="form.planUrl" :src="`./images/${form.planUrl}`" />
       <v-card-actions>
         <v-btn color="error" class="mr-4" text @click="rm">Supprimer</v-btn>
         <v-spacer />

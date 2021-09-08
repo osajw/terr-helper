@@ -65,7 +65,7 @@ export async function printTerr (terr, shareTo) {
   for (let i = 0; i < terr.npvs.length; i++) {
     const npv = terr.npvs[i]
     const img = npv.planUrl ? {
-      image: await getDataUrl(npv.planUrl), fit: [250, 250]
+      image: await getDataUrl(`./images/${npv.planUrl}`), fit: [250, 250]
     } : ''
     npvs.push([dateHelper.$formatDate(npv.date), npv.address, ...(havePlan ? [img] : [])])
   }

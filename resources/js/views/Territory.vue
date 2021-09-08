@@ -73,11 +73,14 @@
                 <v-btn icon @click="showDialogTerritory = true; editTerritoryId = terr.id">
                   <v-icon>{{ mdiPencil }}</v-icon>
                 </v-btn>
-                <v-btn icon @click="print(terr)">
-                  <v-icon>{{ mdiFileExportOutline }}</v-icon>
+                <v-btn icon @click="viewTerritory = terr">
+                  <v-icon>{{ mdiImage }}</v-icon>
                 </v-btn>
                 <v-btn v-if="wepShareOk" icon @click="share(terr)">
                   <v-icon>{{ mdiShareVariant }}</v-icon>
+                </v-btn>
+                <v-btn v-else icon @click="print(terr)">
+                  <v-icon>{{ mdiFileExportOutline }}</v-icon>
                 </v-btn>
               </v-list-item-action>
             </v-list-item>
@@ -167,21 +170,23 @@
     />
     <DialogPeople :visibility.sync="showDialogPeople" :id="editPeopleId" />
     <DialogTerritory :visibility.sync="showDialogTerritory" :id="editTerritoryId" />
+    <ImageViewer :value="!!viewTerritory" :url="viewTerritory ? $terrUrl(viewTerritory.name) : ''" @input="v => v ? 0 : viewTerritory = null" />
   </v-main>
 </template>
 
 <script>
-import { mdiRedoVariant, mdiCalendar, mdiMagnify, mdiClose, mdiAccount, mdiPencil, mdiPlus, mdiFileExportOutline, mdiShareVariant, mdiClockAlertOutline, mdiBookArrowRightOutline, mdiBookArrowLeftOutline, mdiChevronDown, mdiChevronUp } from '@mdi/js'
+import { mdiRedoVariant, mdiCalendar, mdiMagnify, mdiClose, mdiAccount, mdiPencil, mdiImage, mdiPlus, mdiFileExportOutline, mdiShareVariant, mdiClockAlertOutline, mdiBookArrowRightOutline, mdiBookArrowLeftOutline, mdiChevronDown, mdiChevronUp } from '@mdi/js'
 import { mapGetters } from 'vuex'
 import { printTerr } from '../utilities/print'
 import DialogWithdrawal from '../components/DialogWithdrawal'
 import DialogTerritory from '../components/DialogTerritory'
 import DialogPeople from '../components/DialogPeople'
+import ImageViewer from '../components/ImageViewer'
 
 export default {
   name: 'Territory',
   components: {
-    DialogWithdrawal, DialogTerritory, DialogPeople
+    DialogWithdrawal, DialogTerritory, DialogPeople, ImageViewer
   },
   data () {
     return {
@@ -191,6 +196,7 @@ export default {
       mdiClose,
       mdiAccount,
       mdiPencil,
+      mdiImage,
       mdiPlus,
       mdiFileExportOutline,
       mdiShareVariant,
@@ -216,6 +222,7 @@ export default {
       showSearch: false,
       showDialogTerritory: false,
       editTerritoryId: '',
+      viewTerritory: null,
       wepShareOk: !!navigator.share,
       selectedPeopleId: '',
       dialogSelectPeople: false,

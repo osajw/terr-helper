@@ -16,7 +16,7 @@
       <v-card-text>
         <v-container>
           <v-form ref="form" class="BasicForm" v-model="valid" lazy-validation>
-            <DialogPickerDialog v-model="form.date" :rules="rulesDate" label="Date :" />
+            <DialogPickerDialog v-model="form.date" label="Date :" />
             <v-textarea v-model="form.address" label="Adresse :" rows="2" auto-grow />
             <v-text-field v-model="form.planUrl" label="Plan (URL ou Data-URI) :" clearable />
           </v-form>
@@ -56,9 +56,6 @@ export default {
     return {
       mdiClose,
       form: {},
-      rulesDate: [
-        v => !!v || 'Date obligatoire'
-      ],
       valid: false
     }
   },

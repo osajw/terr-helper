@@ -36,13 +36,13 @@
               <v-card-text>
                 <p>{{ npv.address }}</p>
               </v-card-text>
-              <v-img v-if="npv.planUrl" :src="`./images/${npv.planUrl}`" />
+              <v-img v-if="npv.planUrl" :src="$npvUrl(npv.planUrl)" />
             </v-card>
             <v-btn class="add-npv" depressed @click="createNpv">Ajouter</v-btn>
           </div>
         </v-container>
       </v-card-text>
-      <v-img :src="`./images/${form.name}.jpg`" lazy-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" />
+      <v-img :src="$terrUrl(form.name)" lazy-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" />
       <v-virtual-scroll :bench="1" :items="history" :height="history.length > 3 ? 200 : history.length * 64 + 32" item-height="64">
         <template v-slot:default="{ item }">
           <v-list-item :key="item.id">

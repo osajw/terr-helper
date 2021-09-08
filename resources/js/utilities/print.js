@@ -12,6 +12,7 @@ pdfMake.fonts = {
 }
 
 const dateHelper = require('../components/mixins/dateHelper').dateHelper.methods
+const urlHelper = require('../components/mixins/urlHelper').urlHelper.methods
 
 const loadImage = (url) => new Promise((resolve, reject) => {
   const img = new Image()
@@ -48,7 +49,7 @@ const getGreeting = () => {
 }
 
 export async function printTerr (terr, shareTo) {
-  const imageUrl = `./images/${terr.name}.jpg`
+  const imageUrl = urlHelper.$terrUrl(terr.name)
   let landscape = false
   let img, img64
   try {
@@ -65,7 +66,7 @@ export async function printTerr (terr, shareTo) {
   for (let i = 0; i < terr.npvs.length; i++) {
     const npv = terr.npvs[i]
     const img = npv.planUrl ? {
-      image: await getDataUrl(`./images/${npv.planUrl}`), fit: [250, 250]
+      image: await getDataUrl(urlHelper.$npvUrl(npv.planUrl)), fit: [250, 250]
     } : ''
     npvs.push([dateHelper.$formatDate(npv.date), npv.address, ...(havePlan ? [img] : [])])
   }

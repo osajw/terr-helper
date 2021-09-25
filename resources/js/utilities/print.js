@@ -61,12 +61,13 @@ export async function printTerr (terr, shareTo) {
   } catch (error) {
     console.log('print error:', error)
   }
+  const planWidth = 150
   const havePlan = terr.npvs.find(n => n.planUrl)
   const npvs = []
   for (let i = 0; i < terr.npvs.length; i++) {
     const npv = terr.npvs[i]
     const img = npv.planUrl ? {
-      image: await getDataUrl(urlHelper.$npvUrl(npv.planUrl)), fit: [250, 250]
+      image: await getDataUrl(urlHelper.$npvUrl(npv.planUrl)), width: planWidth
     } : ''
     npvs.push([dateHelper.$formatDate(npv.date), npv.address, ...(havePlan ? [img] : [])])
   }
@@ -86,6 +87,7 @@ export async function printTerr (terr, shareTo) {
     {
       table: {
         headerRows: 1,
+        widths: havePlan ? [54, '*', planWidth] : [60, '*'],
         body: [
           [
             { text: 'Date', style: 'tableHeader' },

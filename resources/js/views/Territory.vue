@@ -60,7 +60,7 @@
                     <span>Sortir</span>
                     <v-icon small>{{ terr.needOut ? mdiClockAlertOutline : mdiBookArrowRightOutline }}</v-icon>
                   </v-btn>
-                  <v-btn v-if="terr.needIn || (terr.outAt && !terr.inAt)" :color="terr.needIn ? 'warning' :''" :outlined="!terr.needIn" :small="!terr.needIn" @click="inOrOut(terr, true)">
+                  <v-btn v-if="terr.needIn || (terr.outAt && !terr.inAt)" :color="terr.needIn ? 'red' :''" :outlined="!terr.needIn" :small="!terr.needIn" @click="inOrOut(terr, true)">
                     <span>Rentrer</span>
                     <v-icon small>{{ terr.needIn ? mdiClockAlertOutline : mdiBookArrowLeftOutline }}</v-icon>
                   </v-btn>

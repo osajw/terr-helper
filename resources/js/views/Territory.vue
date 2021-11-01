@@ -38,7 +38,7 @@
         </v-chip-group>
       </v-card>
       <v-virtual-scroll :items="territoriesSorted" :height="height - 64 * 4" bench="3" item-height="160">
-        <template v-slot:default="{ item: terr }">
+        <template v-slot:default="{ item: terr, index }">
           <v-card outlined>
             <v-list-item three-line>
               <v-list-item-content>
@@ -73,7 +73,7 @@
                 <v-btn icon @click="showDialogTerritory = true; editTerritoryId = terr.id">
                   <v-icon>{{ mdiPencil }}</v-icon>
                 </v-btn>
-                <v-btn icon @click="viewTerritory = terr">
+                <v-btn icon @click="viewTerritory = index">
                   <v-icon>{{ mdiImage }}</v-icon>
                 </v-btn>
                 <v-btn v-if="wepShareOk" icon @click="share(terr)">
@@ -170,7 +170,12 @@
     />
     <DialogPeople :visibility.sync="showDialogPeople" :id="editPeopleId" />
     <DialogTerritory :visibility.sync="showDialogTerritory" :id="editTerritoryId" />
-    <ImageViewer :value="!!viewTerritory" :url="viewTerritory ? $terrUrl(viewTerritory.name) : ''" @input="v => v ? 0 : viewTerritory = null" />
+    <vue-easy-lightbox
+      :visible="viewTerritory != -1"
+      :imgs="territoriesSorted.map(t => $terrUrl(t.name))"
+      :index="viewTerritory"
+      @hide="viewTerritory = -1"
+    />
   </v-main>
 </template>
 
@@ -181,12 +186,12 @@ import { printTerr } from '../utilities/print'
 import DialogWithdrawal from '../components/DialogWithdrawal'
 import DialogTerritory from '../components/DialogTerritory'
 import DialogPeople from '../components/DialogPeople'
-import ImageViewer from '../components/ImageViewer'
+import VueEasyLightbox from 'vue-easy-lightbox'
 
 export default {
   name: 'Territory',
   components: {
-    DialogWithdrawal, DialogTerritory, DialogPeople, ImageViewer
+    DialogWithdrawal, DialogTerritory, DialogPeople, VueEasyLightbox
   },
   data () {
     return {
@@ -222,7 +227,7 @@ export default {
       showSearch: false,
       showDialogTerritory: false,
       editTerritoryId: '',
-      viewTerritory: null,
+      viewTerritory: -1,
       wepShareOk: !!navigator.share,
       selectedPeopleId: '',
       dialogSelectPeople: false,

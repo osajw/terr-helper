@@ -42,7 +42,7 @@
           </div>
         </v-container>
       </v-card-text>
-      <v-img :src="$terrUrl(form.name)" lazy-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" />
+      <img :src="$terrUrl(form.name)" class="mx-auto" style="width: 100%;height: 100%; max-width: 900px; max-height: 900px; object-fit: cover;" />
       <v-virtual-scroll :bench="1" :items="history" :height="history.length > 3 ? 200 : history.length * 64 + 32" item-height="64">
         <template v-slot:default="{ item }">
           <v-list-item :key="item.id">

@@ -192,6 +192,7 @@ export default new Vuex.Store({
   getters: {
     withdrawalsByTerrId: (state) => {
       return state.withdrawals.reduce((obj, w) => {
+        if (w.deleted_at) { return obj } // not deleted
         if (!obj[w.territoryId]) { obj[w.territoryId] = [] }
         obj[w.territoryId].push(w)
         return obj

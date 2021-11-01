@@ -238,13 +238,6 @@ export default {
   },
   computed: {
     ...mapGetters(['territories', 'withdrawals', 'peoples', 'territoriesWithInfos']),
-    withdrawalsByTerrId () {
-      return this.withdrawals.reduce((obj, w) => {
-        if (!obj[w.territoryId]) { obj[w.territoryId] = [] }
-        obj[w.territoryId].push(w)
-        return obj
-      }, {})
-    },
     sortedPeoples () {
       return [...this.peoples].sort((a, b) => this.peopleName(a).localeCompare(this.peopleName(b)))
     },

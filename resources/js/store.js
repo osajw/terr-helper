@@ -198,6 +198,14 @@ export default new Vuex.Store({
         return obj
       }, {})
     },
+    npvsByTerrId: (state) => {
+      return state.npvs.reduce((obj, n) => {
+        if (n.deleted_at) { return obj } // not deleted
+        if (!obj[n.territoryId]) { obj[n.territoryId] = [] }
+        obj[n.territoryId].push(n)
+        return obj
+      }, {})
+    },
     territoriesWithInfos: (state, getters) => {
       const today = new Date()
       return state.territories.map((t) => {
@@ -210,7 +218,7 @@ export default new Vuex.Store({
         const last = withdrawals.slice(-1)[0]
         const lastUpdate = last ? new Date(last.updated_at) : null
         const updateAt = new Date(t.updated_at)
-        const npvs = state.npvs.filter(n => n.territoryId === t.id)
+        const npvs = getters.npvsByTerrId[t.id] || []
         const daysIn = last && last.inAt ? dateHelper.$dateDaysDiff(new Date(last.inAt), today) : 0
         const daysOut = last && last.outAt ? dateHelper.$dateDaysDiff(new Date(last.outAt), today) : 0
         return {

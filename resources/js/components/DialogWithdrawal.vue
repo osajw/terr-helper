@@ -193,10 +193,10 @@ export default {
         this.form = { ...this.withdrawals.find(el => el.id === this.id) || {} }
       }
       if (this.setIn) {
-        this.form.inAt = new Date().toISOString().substr(0, 10)
+        this.$set(this.form, 'inAt', new Date().toISOString().substr(0, 10))
       }
       if (this.setOut) {
-        this.form.outAt = new Date().toISOString().substr(0, 10)
+        this.$set(this.form, 'outAt', new Date().toISOString().substr(0, 10))
       }
     },
     getPeoleName (people) {

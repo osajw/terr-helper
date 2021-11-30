@@ -96,7 +96,7 @@
           </v-btn>
           <v-toolbar-title>Trouver une personne</v-toolbar-title>
         </v-toolbar>
-        <v-text-field v-model="searchPeople" placeholder="Recherche" class="mx-4" clearable />
+        <v-text-field v-model="searchPeople" ref="searchUser" placeholder="Recherche" class="mx-4" clearable />
         <v-virtual-scroll :bench="1" :items="filteredPeoples" :height="height - 175" item-height="66">
           <template v-slot:default="{ item }">
             <v-list-item :key="item.id" @click="selectedUser = item.id; showDialogSelectUser = false; searchPeople = ''" style="height: 66px">
@@ -355,6 +355,7 @@ export default {
       } else {
         this.filter = 'outBy'
         this.showDialogSelectUser = true
+        setTimeout(() => this.$refs.searchUser.focus(), 10)
       }
     },
     nOutBy ({ id }) {

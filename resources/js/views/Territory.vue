@@ -52,10 +52,10 @@
                     <span v-if="terr.outAt"> {{ $formatDate(terr.outAt) }}</span>
                     <span v-if="terr.inAt"> - {{ $formatDate(terr.inAt) }}</span>
                   </v-chip>
-                  <v-chip v-if="terr.inAt" :color="terr.needOut ? 'red' : 'green'" outlined>{{ terr.daysIn }}j</v-chip>
-                  <v-chip v-else-if="terr.outAt" :color="terr.needIn ? 'red' : 'green'" outlined>{{ terr.daysOut }}j</v-chip>
+                  <v-chip v-if="!terr.oldWithdrawal && terr.inAt" :color="terr.needOut ? 'red' : 'green'" outlined>{{ terr.daysIn }}j</v-chip>
+                  <v-chip v-else-if="!terr.oldWithdrawal && terr.outAt" :color="terr.needIn ? 'red' : 'green'" outlined>{{ terr.daysOut }}j</v-chip>
                 </v-list-item-subtitle>
-                <v-list-item-subtitle class="d-flex flex-nowrap">
+                <v-list-item-subtitle v-if="!terr.oldWithdrawal" class="d-flex flex-nowrap">
                   <v-btn v-if="terr.needOut || terr.inAt" :color="terr.needOut ? 'warning' :''" :outlined="!terr.needOut" :small="!terr.needOut" @click="inOrOut(terr)">
                     <span>Sortir</span>
                     <v-icon small>{{ terr.needOut ? mdiClockAlertOutline : mdiBookArrowRightOutline }}</v-icon>
@@ -70,16 +70,16 @@
                 </v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-action>
-                <v-btn icon @click="showDialogTerritory = true; editTerritoryId = terr.id">
+                <v-btn v-if="!terr.oldWithdrawal" icon @click="showDialogTerritory = true; editTerritoryId = terr.id">
                   <v-icon>{{ mdiPencil }}</v-icon>
                 </v-btn>
                 <v-btn icon @click="viewTerritory = index">
                   <v-icon>{{ mdiImage }}</v-icon>
                 </v-btn>
-                <v-btn v-if="wepShareOk" icon @click="share(terr)">
+                <v-btn v-if="!terr.oldWithdrawal && wepShareOk" icon @click="share(terr)">
                   <v-icon>{{ mdiShareVariant }}</v-icon>
                 </v-btn>
-                <v-btn v-else icon @click="print(terr)">
+                <v-btn v-else-if="!terr.oldWithdrawal" icon @click="print(terr)">
                   <v-icon>{{ mdiFileExportOutline }}</v-icon>
                 </v-btn>
               </v-list-item-action>
@@ -238,6 +238,8 @@ export default {
   },
   computed: {
     ...mapGetters(['territories', 'withdrawals', 'peoples', 'territoriesWithInfos']),
+    territoriesById () { return this.territories.reduce((o, el) => { o[el.id] = el; return o }, {}) },
+    peoplesById () { return this.peoples.reduce((o, el) => { o[el.id] = el; return o }, {}) },
     sortedPeoples () {
       return [...this.peoples].sort((a, b) => this.peopleName(a).localeCompare(this.peopleName(b)))
     },
@@ -268,19 +270,13 @@ export default {
       return terrs
     },
     territoriesSorted () {
-      const shortBy = this.shortBy
-      const shortDesc = this.shortDesc
-      let terrs = [...this.territoriesFiltered].sort((a,b) => a.name.localeCompare(b.name)) // default by name
-      if (!shortBy) { return terrs }
-      terrs = terrs.sort((a, b) => {
-        if (shortBy === 'difficulty') { return a.difficulty - b.difficulty }
-        if (shortBy === 'days') {
-          return (a.inAt ? a.daysIn : (a.outAt ? a.daysOut : -1)) -
-            (b.inAt ? b.daysIn : (b.outAt ? b.daysOut : -1))
-        }
-        return 0
-      })
-      return shortDesc ? terrs.reverse() : terrs
+      let terrs = this.sortTerrs([...this.territoriesFiltered], this.shortBy, this.shortDesc)
+      if (this.filter === 'outBy') { // add old out
+        const oldWithdrawals = this.withdrawals.filter(w => w.peopleId === this.selectedUser && w.inAt)
+        const oldTerrs = oldWithdrawals.map(w => ({ ...this.territoriesById[w.territoryId], outAt: w.outAt, inAt: w.inAt,  oldWithdrawal: true }))
+        terrs = terrs.concat(this.sortTerrs(oldTerrs, 'inAt', true))
+      }
+      return terrs
     }
   },
   methods: {
@@ -310,6 +306,21 @@ export default {
     },
     filterPeoples (people, queryText) {
       return this.peopleName(people).includes(queryText.toLowerCase())
+    },
+    sortTerrs (terrs, shortBy, shortDesc) {
+      terrs = terrs.sort((a,b) => a.name.localeCompare(b.name)) // default by name
+      if (!shortBy) { return terrs }
+      terrs = terrs.sort((a, b) => {
+        if (shortBy === 'difficulty') { return a.difficulty - b.difficulty }
+        if (shortBy === 'inAt') { return new Date(a.inAt).getTime() - new Date(b.inAt).getTime() }
+        if (shortBy === 'days') {
+          return (a.inAt ? a.daysIn : (a.outAt ? a.daysOut : -1)) -
+            (b.inAt ? b.daysIn : (b.outAt ? b.daysOut : -1))
+        }
+        return 0
+      })
+      if (shortDesc) { terrs.reverse() }
+      return terrs
     },
     print (terr) {
       printTerr(terr)
@@ -403,7 +414,10 @@ export default {
   .content {
     .v-virtual-scroll {
       .v-card {
+        display: flex;
+        align-items: center;
         max-width: 600px;
+        min-height: 142px;
         margin: auto;
       }
     }

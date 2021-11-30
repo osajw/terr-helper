@@ -43,7 +43,13 @@ const api = (type, token, id, method = 'GET', data = {}) => {
     data,
     headers: token ? { 'Authorization': `Bearer ${token}` } : null,
     method
-  }).then(({ data }) => data)
+  }).then(({ data }) => {
+    if ((data || {}).status === 'Token is Expired') {
+      alert('Session expirée, veillez vous reconnecter')
+      window.location.reload()
+    }
+    return data
+  })
 }
 
 export default new Vuex.Store({

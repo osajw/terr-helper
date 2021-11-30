@@ -37,10 +37,19 @@
           </v-chip>
         </v-chip-group>
       </v-card>
-      <v-virtual-scroll :items="territoriesSorted" :height="height - 64 * 4" bench="3" item-height="160">
+      <div v-if="selectedUser" style="height: 50px; max-width: 600px; margin: auto">
+        <v-list-item-title class="d-flex justify-space-between">
+          <span class="text-h5 px-6"><b>Sorti par {{ peopleName(peoplesById[selectedUser]) }}</b></span>
+          <v-btn icon @click="showDialogPeople = true; editPeopleId = selectedUser">
+            <v-icon>{{ mdiPencil }}</v-icon>
+          </v-btn>
+        </v-list-item-title>
+      </div>
+      <v-virtual-scroll :items="territoriesSorted" :height="height - 64 * 4 - (selectedUser ? 50 : 0)" bench="3" item-height="160">
         <template v-slot:default="{ item: terr, index }">
           <v-card outlined>
-            <v-list-item three-line>
+            <v-alert v-if="terr.oldWithdrawal" border="left" type="success" dense style="position: absolute;right: 0;top: 0;left: 0; border-radius: 4px 4px 0 0;">Rentré</v-alert>
+            <v-list-item :style="terr.oldWithdrawal ? 'margin-top: 45px': ''" three-line>
               <v-list-item-content>
                 <v-list-item-title class="d-flex flex-nowrap">
                   <span><b>{{ terr.name }}</b></span>

@@ -148,6 +148,7 @@ export async function printTerr (terr, shareTo) {
 export async function printS13 ({ territories: terr, peoples, withdrawals }) {
   const todayDate = dateHelper.$formatDate(new Date())
   const wdByTerr = withdrawals.reduce((obj, wd) => {
+    if (wd.deleted_at) { return obj }
     if (!obj[wd.territoryId]) { obj[wd.territoryId] = [] }
     obj[wd.territoryId].push(wd)
     return obj

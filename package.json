@@ -9,7 +9,7 @@
         "prod": "npm run production",
         "production": "mix --production"
     },
-    "devDependencies": {
+    "dependencies": {
         "@mdi/js": "^5.9.55",
         "axios": "^0.21",
         "crypto-js": "^4.1.1",
@@ -25,9 +25,7 @@
         "vue-template-compiler": "^2.6.12",
         "vuetify": "^2.5.8",
         "vuetify-loader": "^1.7.2",
-        "vuex": "^3.6.2"
-    },
-    "dependencies": {
+        "vuex": "^3.6.2",
         "vue-easy-lightbox": "^0.16.2"
     }
 }

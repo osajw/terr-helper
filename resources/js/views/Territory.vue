@@ -37,7 +37,7 @@
           </v-chip>
         </v-chip-group>
       </v-card>
-      <div v-if="selectedUser" style="height: 50px; max-width: 600px; margin: auto">
+      <div v-if="selectedUser && filter === 'outBy'" style="height: 50px; max-width: 600px; margin: auto">
         <v-list-item-title class="d-flex justify-space-between">
           <span class="text-h5 px-6"><b>Sorti par {{ peopleName(peoplesById[selectedUser]) }}</b></span>
           <v-btn icon @click="showDialogPeople = true; editPeopleId = selectedUser">

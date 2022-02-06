@@ -53,7 +53,7 @@
               <v-list-item-content>
                 <v-list-item-title class="d-flex flex-nowrap">
                   <span><b>{{ terr.name }}</b></span>
-                  <v-btn class="ml-2 grey lighten-2" icon x-small>{{ terr.difficulty }}</v-btn>
+                  <v-btn :class="['ml-2', {grey: !$vuetify.theme.dark}, 'lighten-2']" icon x-small>{{ terr.difficulty }}</v-btn>
                 </v-list-item-title>
                 <v-list-item-subtitle class="d-flex flex-nowrap my-2">
                   <v-chip class="flex-shrink-0 mr-2" outlined>

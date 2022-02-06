@@ -193,6 +193,9 @@ export default new Vuex.Store({
       localStorage.setItem('prefs', JSON.stringify(data))
       commit('SET_DATA', { name: 'preferences', data })
       return Promise.resolve(data)
+    },
+    upload ({ state }, data) {
+      return api('upload', state.token, '', 'POST', data)
     }
   },
   getters: {

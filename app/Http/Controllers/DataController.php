@@ -140,6 +140,13 @@ class DataController extends Controller
         if (!$model) {
             return response()->json(['error' => 'invalid_type'], 400);
         }
+        if ($type == 'npvs') {
+            unlink(public_path('images/'.$model::find($id)->planUrl));
+        }
+        if ($type == 'territories') {
+            $el = $model::find($id);
+            unlink(public_path('images/'.$el->name.'.jpg'));
+        }
         $model::destroy($id);
         return response()->json(['message' => 'Deleted']);
     }

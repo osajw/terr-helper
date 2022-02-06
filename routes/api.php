@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DataController;
+use App\Http\Controllers\FileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,7 +26,9 @@ Route::post('login', [UserController::class, 'authenticate']);
 Route::get('user', [UserController::class, 'getAuthenticatedUser']);
 Route::get('nuser', [UserController::class, 'getNumberOfUser']);
 
+
 Route::group(['middleware' => ['jwt.verify']], function() {
+    Route::post('/upload', [FileController::class, 'upload']);
     Route::post('/import', [DataController::class, 'import']);
     Route::get('/{type}', [DataController::class, 'index']);
     Route::get('/{type}/{id}', [DataController::class, 'show']);

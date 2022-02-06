@@ -18,11 +18,18 @@
           <v-form ref="form" class="BasicForm" v-model="valid" lazy-validation>
             <DialogPickerDialog v-model="form.date" label="Date :" />
             <v-textarea v-model="form.address" label="Adresse :" rows="2" auto-grow />
-            <v-text-field v-model="form.planUrl" label="Plan (URL ou Data-URI) :" clearable />
+            <div v-if="!form.planUrl" class="d-flex mt-2">
+              <v-btn class="flex-grow-1" depressed @click="uploadFile"><v-icon left dark>{{ mdiCloudUpload }}</v-icon> Ajouter un plan</v-btn>
+            </div>
+            <!-- <v-text-field v-model="form.planUrl" label="Plan (URL ou Data-URI) :" clearable /> -->
           </v-form>
         </v-container>
       </v-card-text>
-      <v-img v-if="form.planUrl" :src="$npvUrl(form.planUrl)" />
+      <div v-if="!errorImage && form.planUrl" class="img-wrapper mx-auto">
+        <v-img :src="$npvUrl(form.planUrl)" style="width: 100%;height: 100%; object-fit: cover;" @error="errorImage = true" />
+        <v-btn fab dark color="warning" @click="uploadFile"><v-icon>{{ mdiSwapHorizontal }}</v-icon></v-btn>
+      </div>
+      <p v-if="uploadFileError" class="red--text text--lighten-1 mb-1 mx-auto">{{ uploadFileError }}</p>
       <v-card-actions>
         <v-btn color="error" class="mr-4" text @click="rm">Supprimer</v-btn>
         <v-spacer />
@@ -34,7 +41,7 @@
 </template>
 
 <script>
-import { mdiClose } from '@mdi/js'
+import { mdiClose, mdiCloudUpload, mdiSwapHorizontal } from '@mdi/js'
 import DialogPickerDialog from './DatePickerDialog'
 
 export default {
@@ -55,8 +62,12 @@ export default {
   data () {
     return {
       mdiClose,
+      mdiCloudUpload,
+      mdiSwapHorizontal,
       form: {},
-      valid: false
+      valid: false,
+      errorImage: false,
+      uploadFileError: ''
     }
   },
   computed: {
@@ -96,6 +107,33 @@ export default {
     },
     getForm () {
       this.form = JSON.parse(JSON.stringify(this.data))
+    },
+    uploadFile () {
+      this.uploadFileError = ''
+      const planUrl = this.form.planUrl || `plan-${Math.random().toString(36).slice(2, 10).toUpperCase()}.jpg`
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = '.jpg,.jpeg,.png,.bmp,.gif'
+      input.onchange = e => { 
+        const file = e.target.files[0]
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('name', planUrl)
+        this.$store.dispatch('upload', formData)
+          .then(() => {
+            this.errorImage = true
+            this.$set(this.form, 'planUrl', planUrl)
+            this.$nextTick(() => (this.errorImage = false))
+          })
+          .catch((err) => {
+            let data = err?.response?.data || {}
+            if (typeof data === 'string') { data = JSON.parse(data) }
+            let msg = data?.error || data?.file || data?.name
+            if (Array.isArray(msg)) { msg = msg.join(', ')}
+            this.uploadFileError = `Une erreur est survenue veuillez réessayer ultérieurement${msg ? ` [${msg}]` : ''}.`
+          })
+      }
+      input.click()
     }
   }
 }
@@ -114,6 +152,16 @@ export default {
       flex-wrap: wrap;
       justify-content: flex-end;
       margin-top: 10px;
+    }
+    .img-wrapper {
+      position: relative;
+      max-width: 900px;
+      max-height: 900px;
+      .v-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+      }
     }
   }
 }

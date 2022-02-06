@@ -15,7 +15,7 @@
       </v-toolbar>
       <v-card-text>
         <v-container>
-          <v-form ref="form" class="BasicForm" v-model="valid" lazy-validation>
+          <v-form ref="form" class="BasicForm mb-4" v-model="valid" lazy-validation>
             <v-text-field v-model="form.name" :rules="nameRules" label="Nom :" required />
             <v-textarea v-model="form.desc" label="Description :" rows="2" auto-grow />
             <v-slider v-model="form.difficulty" label="Difficulté :" :max="10" class="align-center">
@@ -23,9 +23,10 @@
                 <v-text-field :value="form.difficulty" class="mt-0 pt-0" type="number" style="width: 60px" readonly />
               </template>
             </v-slider>
+            <v-btn v-if="errorImage && form.name" elevation="0" style="width: 100%;" @click="uploadFile"><v-icon left dark>{{ mdiCloudUpload }}</v-icon> Ajouter une image</v-btn>
           </v-form>
           <h4>Personnes à ne pas visiter :</h4>
-          <div class="npvs">
+          <div v-if="!hideNpv" class="npvs">
             <v-card v-for="npv in terrNpvs" :key="npv.id" class="npv" outlined flat>
               <v-card-title>
                 <span>{{ $formatDate(npv.date) }}</span>
@@ -38,11 +39,14 @@
               </v-card-text>
               <v-img v-if="npv.planUrl" :src="$npvUrl(npv.planUrl)" />
             </v-card>
-            <v-btn class="add-npv" depressed @click="createNpv">Ajouter</v-btn>
+            <v-btn class="add-npv" depressed @click="createNpv"><v-icon left dark>{{ mdiAccountPlus }}</v-icon> Ajouter</v-btn>
           </div>
         </v-container>
       </v-card-text>
-      <img :src="$terrUrl(form.name)" class="mx-auto" style="width: 100%;height: 100%; max-width: 900px; max-height: 900px; object-fit: cover;" />
+      <div v-if="!errorImage" class="img-wrapper mx-auto">
+        <img :src="$terrUrl(form.name)" style="width: 100%;height: 100%; object-fit: cover;" @error="errorImage = true" />
+        <v-btn fab dark color="warning" @click="uploadFile"><v-icon>{{ mdiSwapHorizontal }}</v-icon></v-btn>
+      </div>
       <v-virtual-scroll :bench="1" :items="history" :height="history.length > 3 ? 200 : history.length * 64 + 32" item-height="64">
         <template v-slot:default="{ item }">
           <v-list-item :key="item.id">
@@ -74,7 +78,7 @@
 </template>
 
 <script>
-import { mdiClose, mdiPencil, mdiAccount, mdiCalendar } from '@mdi/js'
+import { mdiClose, mdiPencil, mdiAccount, mdiCalendar, mdiCloudUpload, mdiAccountPlus, mdiSwapHorizontal } from '@mdi/js'
 import { mapGetters } from 'vuex'
 import DialogNpv from './DialogNpv'
 import DialogWithdrawal from './DialogWithdrawal'
@@ -100,6 +104,9 @@ export default {
       mdiPencil,
       mdiAccount,
       mdiCalendar,
+      mdiCloudUpload,
+      mdiAccountPlus,
+      mdiSwapHorizontal,
       form: {},
       nameRules: [
         v => !!v || 'Nom obligatoire',
@@ -108,8 +115,11 @@ export default {
       valid: false,
       showDialogNpv: false,
       npvForm: {},
+      hideNpv: false,
       npvsToUpdate: [],
       showDialogWithdrawal: false,
+      errorImage: false,
+      uploadFileError: '',
       editWithdrawalId: ''
     }
   },
@@ -164,6 +174,7 @@ export default {
       this.close()
     },
     getForm () {
+      this.errorImage = false
       if (this.visibility) { this.npvsToUpdate = [] } // reset npv updated
       if (this.id === 'new') {
         this.form = { difficulty: 5 }
@@ -190,6 +201,8 @@ export default {
       if (npv.id.slice(0, 3) !== 'new' || !npv.deleted) {
         this.npvsToUpdate.push(npv)
       }
+      this.hideNpv = true
+      this.$nextTick(() => (this.hideNpv = false)) // in order to reload img
     },
     updateNpvs (territoryId) {
       this.npvsToUpdate.forEach(npv => {
@@ -203,6 +216,31 @@ export default {
           this.$store.dispatch('updateData', { name: 'npvs', data: npv })
         }
       })
+    },
+    uploadFile () {
+      this.uploadFileError = ''
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = '.jpg,.jpeg,.png,.bmp,.gif'
+      input.onchange = e => { 
+        const file = e.target.files[0]
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('name', `${this.form.name}.jpg`)
+        this.$store.dispatch('upload', formData)
+          .then(() => {
+            this.errorImage = true
+            this.$nextTick(() => (this.errorImage = false))
+          })
+          .catch((err) => {
+            let data = err?.response?.data || {}
+            if (typeof data === 'string') { data = JSON.parse(data) }
+            let msg = data?.error || data?.file || data?.name
+            if (Array.isArray(msg)) { msg = msg.join(', ')}
+            this.uploadFileError = `Une erreur est survenue veuillez réessayer ultérieurement${msg ? ` [${msg}]` : ''}.`
+          })
+      }
+      input.click()
     },
     peopleName (id) {
       const people = this.peoples.find(p => p.id === id)
@@ -225,6 +263,16 @@ export default {
       flex-wrap: wrap;
       justify-content: flex-end;
       margin-top: 10px;
+    }
+    .img-wrapper {
+      position: relative;
+      max-width: 900px;
+      max-height: 900px;
+      .v-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+      }
     }
     .npv {
       .v-card__title {
@@ -254,7 +302,7 @@ export default {
         margin-top: 10px;
       }
     }
-        .add-npv {
+    .add-npv {
       width: 100%;
       margin-top: 10px;
     }

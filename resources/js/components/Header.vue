@@ -22,6 +22,10 @@
         <v-list-item>
           <v-list-item-title @click="exportData('json')"><v-icon>{{ mdiFileCodeOutline }}</v-icon> .JSON</v-list-item-title>
         </v-list-item>
+        <v-divider v-if="electronTopIframe" />
+        <v-list-item v-if="electronTopIframe">
+         <v-list-item-title @click="openFolder"><v-icon>{{ mdiFolderImage }}</v-icon> Images</v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-menu>
     <v-dialog :value="dataToUpdate" content-class="Header__DialogDataToCheck" transition="dialog-bottom-transition" fullscreen hide-overlay>
@@ -81,7 +85,7 @@
 </template>
 
 <script>
-import { mdiClose, mdiThemeLightDark, mdiDotsVertical, mdiDownloadOutline, mdiFilePdf, mdiFileCodeOutline } from '@mdi/js'
+import { mdiClose, mdiThemeLightDark, mdiDotsVertical, mdiDownloadOutline, mdiFilePdf, mdiFileCodeOutline, mdiFolderImage } from '@mdi/js'
 
 export default {
   name: 'Header',
@@ -93,11 +97,13 @@ export default {
       mdiDownloadOutline,
       mdiFilePdf,
       mdiFileCodeOutline,
+      mdiFolderImage,
       loading: false,
       dataToCheck: [],
       isExport: false,
       dialogPassword: false,
-      aPassword: ''
+      aPassword: '',
+      electronTopIframe: false
     }
   },
   computed: {
@@ -114,6 +120,10 @@ export default {
         imported: last.data
       }
     }
+  },
+  mounted () {
+    window.top.postMessage('is-top-iframe-electron', '*')
+    window.onmessage = (e) => (this.electronTopIframe = e.data === 'top-iframe-is-electron')
   },
   methods: {
     importData () {
@@ -171,6 +181,9 @@ export default {
       if (this._resolvePassord) {
         this._resolvePassord(this.aPassword)
       }
+    },
+    openFolder () {
+      window.top.postMessage('open-image-folder', '*')
     }
   }
 }

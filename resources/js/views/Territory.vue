@@ -58,6 +58,7 @@
                 <v-list-item-subtitle class="d-flex flex-nowrap my-2">
                   <v-chip class="flex-shrink-0 mr-2" outlined>
                     <v-icon v-if="terr.outAt || terr.inAt">{{ mdiCalendar }}</v-icon>
+                    <span class="red--text" v-else>Jamais sorti</span>
                     <span v-if="terr.outAt"> {{ $formatDate(terr.outAt) }}</span>
                     <span v-if="terr.inAt"> - {{ $formatDate(terr.inAt) }}</span>
                   </v-chip>
@@ -323,8 +324,8 @@ export default {
         if (shortBy === 'difficulty') { return a.difficulty - b.difficulty }
         if (shortBy === 'inAt') { return new Date(a.inAt).getTime() - new Date(b.inAt).getTime() }
         if (shortBy === 'days') {
-          return (a.inAt ? a.daysIn : (a.outAt ? a.daysOut : -1)) -
-            (b.inAt ? b.daysIn : (b.outAt ? b.daysOut : -1))
+          return (a.inAt ? a.daysIn : (a.outAt ? a.daysOut : Infinity)) -
+            (b.inAt ? b.daysIn : (b.outAt ? b.daysOut : Infinity))
         }
         return 0
       })

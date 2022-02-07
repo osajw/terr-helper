@@ -259,7 +259,7 @@ export default {
       return this.sortedPeoples.filter(p => this.peopleName(p).toLowerCase().includes(search))
     },
     territoriesFiltered () {
-      let terrs = this.territoriesWithInfos
+      let terrs = this.territoriesWithInfos.filter(t => !t.deleted_at)
       if (this.search) {
         const search = this.search.toLowerCase()
         terrs = terrs.filter(t => t.name.toLowerCase().includes(search) || this.peopleName(t.by).toLowerCase().includes(search))

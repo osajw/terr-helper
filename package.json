@@ -1,5 +1,13 @@
 {
-    "private": true,
+    "name": "terr-helper",
+    "version": "1.0.0",
+    "description": "Territory Helper",
+    "author": "osajw",
+    "license": "gpl-3.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/osajw/terr-helper"
+    },
     "scripts": {
         "dev": "npm run development",
         "development": "mix",
@@ -7,7 +15,8 @@
         "watch-poll": "mix watch -- --watch-options-poll=1000",
         "hot": "mix watch --hot",
         "prod": "npm run production",
-        "production": "mix --production"
+        "production": "mix --production",
+        "get-win-installer": "gulp"
     },
     "dependencies": {
         "@mdi/js": "^5.9.55",
@@ -27,5 +36,11 @@
         "vuetify-loader": "^1.7.2",
         "vuex": "^3.6.2",
         "vue-easy-lightbox": "^0.16.2"
+    },
+    "devDependencies": {
+        "del": "^6.0.0",
+        "execa": "^5.1.1",
+        "gulp": "^4.0.2",
+        "gulp-rename": "^2.0.0"
     }
 }

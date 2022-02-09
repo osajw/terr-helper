@@ -160,8 +160,9 @@ export default {
       }
     },
     setDarkMode () {
-      this.$vuetify.theme.dark = !this.$vuetify.theme.dark
-      this.$store.dispatch('setPref', { key: 'darkmode', val: this.$vuetify.theme.dark })
+      const val = this.$vuetify.theme.dark = !this.$vuetify.theme.dark
+      window.top.postMessage(`set-${val ? 'dark' : 'light'}-mode`, '*')
+      this.$store.dispatch('setPref', { key: 'darkmode', val })
     },
     validData () {
       const last = this.dataToCheck.pop()
@@ -194,6 +195,9 @@ export default {
   .v-toolbar__content {
     box-shadow: 0 3px 30px rgba(0, 0, 0, 0.1);
     text-decoration: none;
+  }
+  &.theme--light.v-app-bar.v-toolbar.v-sheet {
+    background-color: #fff;
   }
   &_vmenu {
     .colored {

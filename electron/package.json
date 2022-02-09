@@ -1,0 +1,23 @@
+{
+  "name": "terr-helper-exe",
+  "version": "1.0.0",
+  "description": "Territory Helper Executable",
+  "productName": "Territory Helper",
+  "main": "index.js",
+  "author": "osajw",
+  "license": "gpl-3.0",
+  "scripts": {
+    "start": "electron .",
+    "package-win": "electron-packager . TerrHelper --overwrite --platform=win32 --arch=ia32 --icon=assets/icons/icon.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Territory Helper\"",
+    "create-installer-win": "node installers/windows.js"
+  },
+  "devDependencies": {
+    "electron": "^17.0.0",
+    "electron-packager": "^15.4.0",
+    "electron-winstaller": "^5.0.0"
+  },
+  "dependencies": {
+    "custom-electron-titlebar": "^4.0.1",
+    "node-php-server": "^0.1.2"
+  }
+}

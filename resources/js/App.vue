@@ -20,6 +20,7 @@ export default {
   created () {
     this.$store.dispatch('fetchPref').then((prefs) => {
       this.$vuetify.theme.dark = prefs.darkmode
+      window.top.postMessage(`set-${prefs.darkmode ? 'dark' : 'light'}-mode`, '*')
     })
   }
 }

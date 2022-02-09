@@ -12,15 +12,17 @@
         </v-btn>
       </template>
       <v-list>
+        <v-subheader class="overline"><v-icon small>{{ mdiApplicationImport }}</v-icon> Importer</v-subheader>
         <v-list-item>
-          <v-list-item-title class="colored" @click="importData"><v-icon>{{ mdiDownloadOutline }}</v-icon> Importer</v-list-item-title>
+          <v-list-item-title @click="importData"><v-icon>{{ mdiFileCodeOutline }}</v-icon> Données (.json)</v-list-item-title>
         </v-list-item>
         <v-divider />
+        <v-subheader class="overline"><v-icon small>{{ mdiApplicationExport }}</v-icon> Exporter</v-subheader>
         <v-list-item>
-          <v-list-item-title @click="exportData('s13')"><v-icon>{{ mdiFilePdf }}</v-icon> S-13</v-list-item-title>
+          <v-list-item-title @click="exportData('json')"><v-icon>{{ mdiFileCodeOutline }}</v-icon>Données (.json)</v-list-item-title>
         </v-list-item>
         <v-list-item>
-          <v-list-item-title @click="exportData('json')"><v-icon>{{ mdiFileCodeOutline }}</v-icon> .JSON</v-list-item-title>
+          <v-list-item-title @click="exportData('s13')"><v-icon>{{ mdiFilePdf }}</v-icon>Fiches S-13</v-list-item-title>
         </v-list-item>
         <v-divider v-if="electronTopIframe" />
         <v-list-item v-if="electronTopIframe">
@@ -85,7 +87,7 @@
 </template>
 
 <script>
-import { mdiClose, mdiThemeLightDark, mdiDotsVertical, mdiDownloadOutline, mdiFilePdf, mdiFileCodeOutline, mdiFolderImage } from '@mdi/js'
+import { mdiClose, mdiThemeLightDark, mdiDotsVertical, mdiApplicationImport, mdiApplicationExport, mdiFilePdf, mdiFileCodeOutline, mdiFolderImage } from '@mdi/js'
 
 export default {
   name: 'Header',
@@ -94,7 +96,8 @@ export default {
       mdiClose,
       mdiThemeLightDark,
       mdiDotsVertical,
-      mdiDownloadOutline,
+      mdiApplicationImport,
+      mdiApplicationExport,
       mdiFilePdf,
       mdiFileCodeOutline,
       mdiFolderImage,
@@ -200,9 +203,6 @@ export default {
     background-color: #fff;
   }
   &_vmenu {
-    .colored {
-      color: var(--v-anchor-base);
-    }
     .v-list-item {
       cursor: pointer;
       transition: .5s ease all;

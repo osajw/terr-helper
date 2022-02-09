@@ -1,6 +1,9 @@
 <template>
   <v-main class="History">
-    <div class="territories">
+    <v-alert v-if="!dataSorted.length" border="left" close-text="Fermer" type="info" class="mt-6" style="max-width: 800px; margin: auto" text>
+      Aucune donnée pour le moment. Vous retrouvez ici les entrées, sorties, modifications et suppressions effectuées dernièrement.
+      </v-alert>
+    <div v-else class="territories">
       <v-card v-for="data in dataSorted" :key="data.type + data.id" class="territory" outlined>
         <v-card-subtitle class="pb-0">
           

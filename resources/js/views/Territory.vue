@@ -45,7 +45,11 @@
           </v-btn>
         </v-list-item-title>
       </div>
-      <v-virtual-scroll :items="territoriesSorted" :height="height - 64 * 4 - (selectedUser ? 50 : 0)" bench="3" item-height="160">
+      <v-alert v-if="!territoriesFiltered.length" border="left" close-text="Fermer" type="info" class="mt-6" style="max-width: 800px; margin: auto" text>
+      Vous n'avez aucun territoire pour le moment. Vous pouvez en créer un via le bouton <v-btn color="primary" elevation="2" x-small fab><v-icon>{{ mdiPlus }}</v-icon></v-btn> en bas. <br>
+      Vous pouvez aussi en importer via le bouton <v-btn :light="!$vuetify.theme.dark" :dark="$vuetify.theme.dark" fab elevation="2" x-small><v-icon>{{ mdiDotsVertical }}</v-icon></v-btn> en haut à droite.
+      </v-alert>
+      <v-virtual-scroll v-else :items="territoriesSorted" :height="height - 64 * 4 - (selectedUser ? 50 : 0)" bench="3" item-height="160">
         <template v-slot:default="{ item: terr, index }">
           <v-card outlined>
             <v-alert v-if="terr.oldWithdrawal" border="left" type="success" dense style="position: absolute;right: 0;top: 0;left: 0; border-radius: 4px 4px 0 0;">Rentré</v-alert>
@@ -190,7 +194,7 @@
 </template>
 
 <script>
-import { mdiRedoVariant, mdiCalendar, mdiMagnify, mdiClose, mdiAccount, mdiPencil, mdiImage, mdiPlus, mdiFileExportOutline, mdiShareVariant, mdiClockAlertOutline, mdiBookArrowRightOutline, mdiBookArrowLeftOutline, mdiChevronDown, mdiChevronUp } from '@mdi/js'
+import { mdiRedoVariant, mdiCalendar, mdiMagnify, mdiClose, mdiAccount, mdiPencil, mdiImage, mdiPlus, mdiDotsVertical, mdiFileExportOutline, mdiShareVariant, mdiClockAlertOutline, mdiBookArrowRightOutline, mdiBookArrowLeftOutline, mdiChevronDown, mdiChevronUp } from '@mdi/js'
 import { mapGetters } from 'vuex'
 import { printTerr } from '../utilities/print'
 import DialogWithdrawal from '../components/DialogWithdrawal'
@@ -213,6 +217,7 @@ export default {
       mdiPencil,
       mdiImage,
       mdiPlus,
+      mdiDotsVertical,
       mdiFileExportOutline,
       mdiShareVariant,
       mdiClockAlertOutline,

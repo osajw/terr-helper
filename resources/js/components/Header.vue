@@ -30,6 +30,11 @@
         </v-list-item>
       </v-list>
     </v-menu>
+    <v-dialog v-model="loading" transition="dialog-top-transition" fullscreen>
+      <v-overlay :value="loading">
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-overlay>
+    </v-dialog>
     <v-dialog :value="dataToUpdate" content-class="Header__DialogDataToCheck" transition="dialog-bottom-transition" fullscreen hide-overlay>
       <v-card>
         <v-toolbar color="primary" dense dark>
@@ -146,6 +151,9 @@ export default {
         if (needUserCheck.length) {
           this.dataToCheck = needUserCheck
         }
+      }).catch((err) => {
+        alert('une erreur est survenue, veuillez réessayer ultérieurement')
+        this.loading = false
       })
     },
     exportData (format) {

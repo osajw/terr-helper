@@ -30,6 +30,10 @@ export default {
     box-sizing: border-box;
 }
 
+.theme--light.v-application {
+  background-color: #f5f5f5;
+}
+
 * {
   scrollbar-color: var(--v-secondary-base) transparent; // Firefox
   scrollbar-width: 8px; // Firefox

@@ -385,6 +385,9 @@ export default {
   }
   .filters, .filters-2 {
     z-index: 1;
+    &.theme--light {
+      background-color: #fff;
+    }
     .v-slide-group__next, .v-slide-group__prev {
       min-width: 20px;
     }

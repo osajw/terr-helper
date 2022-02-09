@@ -44,7 +44,7 @@ const createWindow = () => {
     mainWindow.show()
     mainWindow.removeMenu()
     // mainWindow.maximize()
-    mainWindow.webContents.openDevTools() // DEV ONLY
+    // mainWindow.webContents.openDevTools() // DEV ONLY
   })
 
   // Emitted when the window is closed.

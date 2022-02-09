@@ -46,7 +46,7 @@
           <span style="font-size: 14px;"><em>le: {{ $formatDate(data.updated_at, true, true) }}</em></span>
         </v-card-actions>
       </v-card>
-      <div class="d-flex justify-center my-4">
+      <div v-if="dataSorted.length > maxItems" class="d-flex justify-center my-4">
         <v-btn color="primary" fab @click="maxItems += 10"><v-icon>{{ mdiPlus }}</v-icon></v-btn>
       </div>
     </div>

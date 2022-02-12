@@ -49,10 +49,9 @@ const buildLaravel = async () => {
 
 const makeInstaller = async () => {
   await execa('npm', ['install'], execaOptInElectron)
-  await execa('node', ['node_modules/electron-packager/bin/electron-packager.js', '.', 'TerrHelper', '--overwrite', '--platform=win32', '--arch=ia32', '--icon=assets/icons/icon.ico', '--prune=true', '--out=release-builds', '--version-string.CompanyName=CE', '--version-string.FileDescription=CE', '--version-string.ProductName="Territory', 'Helper"'], execaOptInElectron)
-  await execa('node', ['installers/windows.js'], execaOptInElectron)
+  await execa('npm', ['run', 'dist'], execaOptInElectron)
 }
 
-const clean = () => del('electron/www/**', { force:true })
+const clean = () => del(['electron/www/**', 'electron/out'], { force:true })
 
 exports.default = series(clean, buildLocal, cloneFolder, setEnvFile, buildLaravel, makeInstaller)

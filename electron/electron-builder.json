@@ -1,0 +1,27 @@
+{
+  "appId": "com.osajw.terrhelper",
+  "productName": "Territory Helper",
+  "copyright": "@osajw gpl-3.0",
+  "asar": false,
+  "directories": {
+    "app": ".",
+    "output": "out",
+    "buildResources": "build-res"
+  },
+  "mac": {
+    "target": "dmg",
+    "category": "public.app-category.utilities"
+    },
+  "win": {
+    "target": "nsis",
+    "icon": "build/icon.png"
+  },
+  "linux": {
+    "target": "AppImage",
+    "category": "Utility"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true
+  }
+}

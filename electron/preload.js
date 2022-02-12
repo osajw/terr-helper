@@ -20,7 +20,7 @@ window.onmessage = (e) => {
 window.addEventListener('DOMContentLoaded', () => {
   titlebar = new Titlebar({
     backgroundColor: Color.fromHex("#fff"),
-    icon: './assets/icons/icon.ico',
+    icon: './build/icon.png',
     titleHorizontalAlignment: 'left',
     onMinimize: () => ipcRenderer.send('window-minimize'),
     onMaximize: () => ipcRenderer.send('window-maximize'),

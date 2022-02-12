@@ -4,7 +4,7 @@
       Aucune donnée pour le moment. Vous retrouvez ici les entrées, sorties, modifications et suppressions effectuées dernièrement.
       </v-alert>
     <div v-else class="territories">
-      <v-card v-for="data in dataSorted" :key="data.type + data.id" class="territory" outlined>
+      <v-card v-for="data in dataSorted.slice(0, maxItems)" :key="data.type + data.id" class="territory" outlined>
         <v-card-subtitle class="pb-0">
           
           <template v-if="data.type === 'Territoire'">
@@ -83,7 +83,6 @@ export default {
         ...this.territories.map(t => ({ ...t, type: 'Territoire' })),
         ...this.withdrawals.map(t => ({ ...t, type: 'Entré/sortie' })) 
       ].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
-       .slice(0, this.maxItems)
     }
   },
   methods: {

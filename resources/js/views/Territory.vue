@@ -45,11 +45,14 @@
           </v-btn>
         </v-list-item-title>
       </div>
-      <v-alert v-if="!territoriesFiltered.length" border="left" close-text="Fermer" type="info" class="mt-6" style="max-width: 800px; margin: auto" text>
+      <v-alert v-else-if="!territoriesFiltered.length && !search.length" border="left" type="info" class="mt-6" style="max-width: 800px; margin: auto" text>
       Vous n'avez aucun territoire pour le moment. Vous pouvez en créer un via le bouton <v-btn color="primary" elevation="2" x-small fab><v-icon>{{ mdiPlus }}</v-icon></v-btn> en bas. <br>
       Vous pouvez aussi en importer via le bouton <v-btn :light="!$vuetify.theme.dark" :dark="$vuetify.theme.dark" fab elevation="2" x-small><v-icon>{{ mdiDotsVertical }}</v-icon></v-btn> en haut à droite.
       </v-alert>
-      <v-virtual-scroll v-else :items="territoriesSorted" :height="height - 64 * 4 - (selectedUser ? 50 : 0)" bench="3" item-height="160">
+      <v-alert v-if="(!territoriesFiltered.length && search.length) || (selectedUser && filter === 'outBy' && !territoriesSorted.length)" border="left" type="warning" class="mt-6" style="max-width: 800px; margin: auto" text>
+      Aucun résultat trouvé.
+      </v-alert>
+      <v-virtual-scroll v-if="territoriesSorted.length" :items="territoriesSorted" :height="height - 64 * 4 - (selectedUser ? 50 : 0)" bench="3" item-height="160">
         <template v-slot:default="{ item: terr, index }">
           <v-card outlined>
             <v-alert v-if="terr.oldWithdrawal" border="left" type="success" dense style="position: absolute;right: 0;top: 0;left: 0; border-radius: 4px 4px 0 0;">Rentré</v-alert>
@@ -288,7 +291,11 @@ export default {
       let terrs = this.sortTerrs([...this.territoriesFiltered], this.shortBy, this.shortDesc)
       if (this.filter === 'outBy') { // add old out
         const oldWithdrawals = this.withdrawals.filter(w => w.peopleId === this.selectedUser && w.inAt)
-        const oldTerrs = oldWithdrawals.map(w => ({ ...this.territoriesById[w.territoryId], outAt: w.outAt, inAt: w.inAt,  oldWithdrawal: true }))
+        let oldTerrs = oldWithdrawals.map(w => ({ ...this.territoriesById[w.territoryId], outAt: w.outAt, inAt: w.inAt,  oldWithdrawal: true }))
+        if (this.search) {
+          const search = this.search.toLowerCase()
+          oldTerrs = oldTerrs.filter(t => t.name.toLowerCase().includes(search) || this.peopleName(t.by).toLowerCase().includes(search))
+        }
         terrs = terrs.concat(this.sortTerrs(oldTerrs, 'inAt', true))
       }
       return terrs

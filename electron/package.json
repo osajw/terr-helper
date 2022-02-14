@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "custom-electron-titlebar": "^4.0.1",
+    "electron-log": "^4.4.6",
     "node-php-server": "^0.1.2"
   }
 }

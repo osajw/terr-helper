@@ -1,22 +1,28 @@
+const path = require('path')
+const fs = require('fs')
 const { app, screen, BrowserWindow, ipcMain, shell } = require('electron')
+const log = require('electron-log')
+log.info('Start')
 
+// Create a PHP Server
 const phpServer = require('node-php-server')
 const port = 8123
 const host = '127.0.0.1'
+phpServer.createServer({
+  port: port,
+  hostname: host,
+  base: `${__dirname}/www/public`,
+  keepalive: false,
+  open: false,
+  bin: `${__dirname}/php/php.exe`,
+  router: __dirname + '/www/server.php'
+})
+
+const imagesDir = path.join(__dirname, '/www/public/images')
+fs.mkdirSync(imagesDir, { recursive: true })
 
 let mainWindow
-const createWindow = () => {
-  // Create a PHP Server
-  phpServer.createServer({
-    port: port,
-    hostname: host,
-    base: `${__dirname}/www/public`,
-    keepalive: false,
-    open: false,
-    bin: `${__dirname}/php/php.exe`,
-    router: __dirname + '/www/server.php'
-  })
-  
+const createWindow = () => {  
   // Create the browser window.
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
   mainWindow = new BrowserWindow({
@@ -42,13 +48,12 @@ const createWindow = () => {
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
-    phpServer.close()
     mainWindow = null
   })
 
   ipcMain.on('asynchronous-message', (event, arg) => {
     if (arg === 'open-image-folder') {
-      shell.openPath(`${__dirname}/www/public/images`)
+      shell.openPath(imagesDir)
     }
   })
   
@@ -76,7 +81,7 @@ app.on('window-all-closed', function () {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
-    // PHP SERVER QUIT
+    log.info('Closing PHP Server...')
     phpServer.close()
     app.quit()
   }

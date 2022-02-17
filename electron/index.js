@@ -1,8 +1,12 @@
 const path = require('path')
 const fs = require('fs')
-const { app, screen, BrowserWindow, ipcMain, shell } = require('electron')
+const { app, screen, BrowserWindow, ipcMain, shell, dialog } = require('electron')
+const { autoUpdater } = require('electron-updater')
+const Store = require('electron-store')
 const log = require('electron-log')
-log.info('Start')
+
+const store = new Store()
+log.info(`Start - v${app.getVersion()}`)
 
 // Create a PHP Server
 const phpServer = require('node-php-server')
@@ -19,6 +23,8 @@ phpServer.createServer({
 })
 
 const imagesDir = path.join(__dirname, '/www/public/images')
+const dbFile = path.join(__dirname, '/www/database/database.sqlite')
+const tempDir = app.getPath('temp')
 fs.mkdirSync(imagesDir, { recursive: true })
 
 let mainWindow
@@ -36,7 +42,6 @@ const createWindow = () => {
     }
   })
 
-  // mainWindow.loadURL(`http://${host}:${port}`)
   mainWindow.loadFile('index.html')
 
   mainWindow.webContents.once('dom-ready', function () {
@@ -75,7 +80,57 @@ const createWindow = () => {
   })
 }
 
-app.on('ready', createWindow)
+const copyData = () => {
+  const randomKey = `TH-${Math.random().toString(32).slice(2, 9)}`
+  const randomFolder = path.join(tempDir, randomKey)
+  const imgFolder = path.join(randomFolder, 'images')
+  store.set('updateKey', randomKey)
+  fs.mkdirSync(imgFolder, { recursive: true })
+  fs.copyFileSync(dbFile, path.join(randomFolder, 'database.sqlite'))
+  fs.readdirSync(imagesDir).forEach(fileName => {
+    fs.copyFileSync(path.join(imagesDir, fileName), path.join(imgFolder, fileName))
+  })
+}
+
+const restorData = () => {
+  const randomKey = store.get('updateKey')
+  if (randomKey) {
+    console.log('randomKey', randomKey)
+    store.delete('updateKey')
+    const randomFolder = path.join(tempDir, randomKey)
+    // restore /tmp database & images:
+    fs.copyFileSync(path.join(randomFolder, 'database.sqlite'), dbFile)
+    const imgFolder = path.join(randomFolder, 'images')
+    fs.readdirSync(imgFolder).forEach(fileName => {
+      fs.copyFileSync(path.join(imgFolder, fileName), path.join(imagesDir, fileName))
+    })
+    // delete /tmp database & images:
+    fs.rmSync(randomFolder, { recursive: true, force: true })
+  }
+}
+
+autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName, releaseDate, updateURL) => {
+  log('update-downloaded', [event, releaseNotes, releaseName, releaseDate, updateURL])
+
+  const dialogOpts = {
+    type: 'info',
+    buttons: [],
+    title: 'Mise à jour',
+    message: process.platform === 'win32' ? releaseNotes : releaseName,
+    detail: 'Une nouvelle version a été téléchargée. L\'application va redémarrer pour appliquer les mises à jour.'
+  }
+
+  dialog.showMessageBox(dialogOpts).then(() => {
+    copyData() // save data before update
+    autoUpdater.quitAndInstall()
+  })
+})
+
+app.on('ready', () => {
+  restorData() // after an update restore data
+  createWindow()
+  autoUpdater.checkForUpdates()
+})
 
 app.on('window-all-closed', function () {
   // On OS X it is common for applications and their menu bar

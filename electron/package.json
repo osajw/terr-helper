@@ -1,17 +1,22 @@
 {
-  "name": "terr-helper-exe",
-  "version": "1.0.0",
-  "description": "Territory Helper Executable",
+  "name": "terr-helper-win-app",
+  "version": "0.9.0",
+  "description": "Territory Helper",
   "productName": "Territory Helper",
-  "main": "index.js",
   "author": "osajw",
   "license": "gpl-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/osajw/terr-helper"
+  },
+  "main": "index.js",
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "portable": "electron-builder --win portable",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "release": "electron-builder"
   },
   "devDependencies": {
     "electron": "^17.0.0",
@@ -20,6 +25,8 @@
   "dependencies": {
     "custom-electron-titlebar": "^4.0.1",
     "electron-log": "^4.4.6",
+    "electron-store": "^8.0.1",
+    "electron-updater": "^4.6.5",
     "node-php-server": "^0.1.2"
   }
 }

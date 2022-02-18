@@ -95,7 +95,6 @@ const copyData = () => {
 const restorData = () => {
   const randomKey = store.get('updateKey')
   if (randomKey) {
-    console.log('randomKey', randomKey)
     store.delete('updateKey')
     const randomFolder = path.join(tempDir, randomKey)
     // restore /tmp database & images:
@@ -109,14 +108,14 @@ const restorData = () => {
   }
 }
 
-autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName, releaseDate, updateURL) => {
-  log('update-downloaded', [event, releaseNotes, releaseName, releaseDate, updateURL])
+autoUpdater.on('update-downloaded', (event) => {
+  log.info('update-downloaded', event)
 
   const dialogOpts = {
     type: 'info',
     buttons: [],
     title: 'Mise à jour',
-    message: process.platform === 'win32' ? releaseNotes : releaseName,
+    message: event.releaseNotes || event.releaseName,
     detail: 'Une nouvelle version a été téléchargée. L\'application va redémarrer pour appliquer les mises à jour.'
   }
 

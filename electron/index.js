@@ -115,7 +115,7 @@ autoUpdater.on('update-downloaded', (event) => {
     type: 'info',
     buttons: [],
     title: 'Mise à jour',
-    message: event.releaseNotes || event.releaseName,
+    message: event.releaseName,
     detail: 'Une nouvelle version a été téléchargée. L\'application va redémarrer pour appliquer les mises à jour.'
   }
 

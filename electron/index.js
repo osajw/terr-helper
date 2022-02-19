@@ -43,6 +43,8 @@ const createWindow = () => {
   })
 
   mainWindow.loadFile('index.html')
+  
+  mainWindow.webContents.send('version', app.getVersion())
 
   mainWindow.webContents.once('dom-ready', function () {
     mainWindow.show()

@@ -6,7 +6,7 @@ let titlebar
 window.onmessage = (e) => {
   if (e.data === 'is-top-iframe-electron') {
     return document.querySelector('iframe')
-      .contentWindow.postMessage('top-iframe-is-electron', '*');
+      .contentWindow.postMessage('top-iframe-is-electron', '*')
   }
   if (e.data === 'set-dark-mode') {
     return titlebar.updateBackground(Color.fromHex("#272727"))
@@ -28,4 +28,12 @@ window.addEventListener('DOMContentLoaded', () => {
     isMaximized: () => ipcRenderer.sendSync('window-is-maximized'),
     onMenuItemClick: () => {}
   })
+})
+
+ipcRenderer.once('version', (e, version) => {
+  const winTitle = document.querySelector('.cet-window-title')
+  const winVersion = document.createElement('span')
+  winVersion.innerText = version
+  winVersion.className = 'cet-window-version'
+  winTitle.appendChild(winVersion)
 })

@@ -1,4 +1,4 @@
-![Capture d'écran](https://raw.githubusercontent.com/osajw/terr-helper/main/docs/images/screenshot.png)
+![Capture d'écran](https://raw.githubusercontent.com/osajw/terr-helper/main/doc/images/screenshot.png)
 
 # Fonctionnalités
 
@@ -12,7 +12,7 @@
 
 # Installation
 ## Windows
-Télécharger et exécuter [l’exécutable](https://github.com/osajw/terr-helper/releases/download/v1.0.0/Territory-Helper-Setup-1.0.0.exe).
+Télécharger et exécuter [l’exécutable](https://github.com/osajw/terr-helper/releases/download/v0.9.3/Territory-Helper-Setup-0.9.3.exe).
 
 ## Serveur
 ```sh
@@ -24,7 +24,7 @@ php artisan migrate
 ```
 
 # Sécurité
-Aucune donnée n’est stockée en ligne. L’application est 100% locale. Pour plus de sécurité et protéger les donnés, installer l’application sur un disque crypté (via [Veracrypt](https://www.veracrypt.fr/code/VeraCrypt/)] par exemple).
+Aucune donnée n’est stockée en ligne. L’application est 100% locale. Pour plus de sécurité et protéger les donnés, installer l’application sur un disque crypté (via [Veracrypt](https://www.veracrypt.fr/code/VeraCrypt/) par exemple).
 
 # Contribution et bugs
 Le projet est ouvert aux contributions (via [pull request](https://github.com/osajw/terr-helper/pulls)). Si vous rencontrez un bug vous pouvez le signaler [ici](https://github.com/osajw/terr-helper/issues).

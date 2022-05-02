@@ -6,7 +6,7 @@ Vue.use(Vuetify)
 
 export default new Vuetify({
   lang: {
-    locales: { fr },
+    locales: { fr }, // TODO: switch & date input, store local in localStorage
     current: 'fr'
   },
   icons: {

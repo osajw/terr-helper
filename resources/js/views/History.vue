@@ -1,23 +1,21 @@
 <template>
   <v-main class="History">
-    <v-alert v-if="!dataSorted.length" border="left" close-text="Fermer" type="info" class="mt-6" style="max-width: 800px; margin: auto" text>
-      Aucune donnée pour le moment. Vous retrouvez ici les entrées, sorties, modifications et suppressions effectuées dernièrement.
-      </v-alert>
+    <v-alert v-if="!dataSorted.length" border="left" close-text="Fermer" type="info" class="mt-6" style="max-width: 800px; margin: auto" text>{{ $t('history.noData') }}</v-alert>
     <div v-else class="territories">
       <v-card v-for="data in dataSorted.slice(0, maxItems)" :key="data.type + data.id" class="territory" outlined>
         <v-card-subtitle class="pb-0">
           
-          <template v-if="data.type === 'Territoire'">
+          <template v-if="data.type === 'terr'">
             <div class="d-flex justify-space-between align-center">
-              <div>{{ data.type }} - <span class="name">{{ data.name }}</span></div>
-              <v-chip x-small>{{ data.created_at === data.updated_at ? 'Création' : ( data.deleted_at ? 'Suppression' : 'Mise à jour') }}</v-chip>
+              <div>{{ $t('territory.label') }} - <span class="name">{{ data.name }}</span></div>
+              <v-chip x-small>{{ infoType(data, 'creation') }}</v-chip>
             </div>
           </template>
 
-          <template v-else-if="data.type === 'Entré/sortie'">
+          <template v-else-if="data.type === 'inOut'">
             <div class="d-flex justify-space-between align-center">
-              <div>{{ data.type }} - <span class="name">{{ terrName(data.territoryId) }}</span></div>
-              <v-chip x-small>{{ data.created_at === data.updated_at ? 'Ajout' : ( data.deleted_at ? 'Suppression' : 'Mise à jour') }}</v-chip>
+              <div>{{ $t('territory.inOut') }} - <span class="name">{{ terrName(data.territoryId) }}</span></div>
+              <v-chip x-small>{{ infoType(data) }}</v-chip>
             </div>
             <v-chip class="mb-1" label small><v-icon left>{{ mdiAccount }}</v-icon> {{ peopleName(data.peopleId) }}</v-chip> <br>
             <v-icon v-if="data.outAt || data.inAt">{{ mdiCalendar }}</v-icon>
@@ -25,19 +23,19 @@
             <span v-if="data.inAt"> - {{ $formatDate(data.inAt) }}</span>
           </template>
 
-          <template v-else-if="data.type === 'Personne'">
+          <template v-else-if="data.type === 'people'">
             <div class="d-flex justify-space-between align-center">
-              <div>{{ data.type }} - <span class="name">{{ peopleName(data) }}</span></div>
-              <v-chip x-small>{{ data.created_at === data.updated_at ? 'Ajout' : ( data.deleted_at ? 'Suppression' : 'Mise à jour') }}</v-chip>
+              <div>{{ $t('territory.people') }} - <span class="name">{{ peopleName(data) }}</span></div>
+              <v-chip x-small>{{ infoType(data) }}</v-chip>
             </div>
             <v-chip class="mb-1" label small><v-icon left>{{ mdiEmail }}</v-icon> {{ data.email }}</v-chip> <br>
             <v-chip label small><v-icon left>{{ mdiPhone }}</v-icon> {{ data.phone }}</v-chip>
           </template>
 
-          <template v-else-if="data.type === 'NPV'">
+          <template v-else-if="data.type === 'novisit'">
             <div class="d-flex justify-space-between align-center">
-              <div>{{ data.type }} - <span class="name">{{ terrName(data.territoryId) }}</span></div>
-              <v-chip x-small>{{ data.created_at === data.updated_at ? 'Ajout' : ( data.deleted_at ? 'Suppression' : 'Mise à jour') }}</v-chip>
+              <div>{{ $t('territory.doNotVisit') }} - <span class="name">{{ terrName(data.territoryId) }}</span></div>
+              <v-chip x-small>{{ infoType(data) }}</v-chip>
             </div>
             <v-img v-if="data.planUrl" :src="$npvUrl(data.planUrl)" />
             <v-chip label small><v-icon left>{{ mdiMapMarker }}</v-icon> {{ data.address }}</v-chip>
@@ -46,7 +44,7 @@
         </v-card-subtitle>
         <v-card-actions>
           <v-spacer />
-          <span style="font-size: 14px;"><em>le: {{ $formatDate(data.updated_at, true, true) }}</em></span>
+          <span style="font-size: 14px;"><em>{{ $t('history.at') }} {{ $formatDate(data.updated_at, true) }}</em></span>
         </v-card-actions>
       </v-card>
       <div v-if="dataSorted.length > maxItems" class="d-flex justify-center my-4">
@@ -78,10 +76,10 @@ export default {
     ...mapGetters(['territoriesWithInfos']),
     dataSorted () {
       return [
-        ...this.npvs.map(t => ({ ...t, type: 'NPV' })),
-        ...this.peoples.map(t => ({ ...t, type: 'Personne' })),
-        ...this.territories.map(t => ({ ...t, type: 'Territoire' })),
-        ...this.withdrawals.map(t => ({ ...t, type: 'Entré/sortie' })) 
+        ...this.npvs.map(t => ({ ...t, type: 'novisit' })),
+        ...this.peoples.map(t => ({ ...t, type: 'people' })),
+        ...this.territories.map(t => ({ ...t, type: 'terr' })),
+        ...this.withdrawals.map(t => ({ ...t, type: 'inOut' })) 
       ].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
     }
   },
@@ -90,10 +88,14 @@ export default {
       if (typeof people === 'string') {
         people = this.peoples.find(p => p.id === people)
       }
-      return people ? `${people.firstname} ${people.lastname}` : 'Personne supprimée'
+      return people ? `${people.firstname} ${people.lastname}` : this.$t('territory.peopleDeleted')
     },
     terrName (terrId) {
-      return (this.territoriesWithInfos.find(t => t.id === terrId) || {}).name || 'Territoire supprimé'
+      return (this.territoriesWithInfos.find(t => t.id === terrId) || {}).name || this.$t('territory.deleted')
+    },
+    infoType (data, keyForAdd = 'add') {
+      if (data.created_at === data.updated_at) { this.$t(`history.${keyForAdd}`) }
+      return this.$t(`history.${data.deleted_at ? 'deletion' : 'update'}`)
     }
   }
 }

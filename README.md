@@ -1,20 +1,21 @@
 ![Capture d'écran](https://raw.githubusercontent.com/osajw/terr-helper/main/doc/images/screenshot.png)
 
-# Fonctionnalités
+### Translation: [English](README.md) | [Français](README.fr.md)
+# Features
 
-- Ajout de territoires
-- Trie par date, nom ou territoire
-- Afficher les territoires à sortir, à rentrer, sorti par untel.
-- Historique des sorties / entrée, modifications et suppressions
-- Exportation des territoires en PDF
-- Exportation automatique de la S-13
-- Importation et exportation des données avec chiffrage
+- Add territories
+- Sort by date, name or territory
+- Display the territories to exit, to enter, exited by ...
+- History of exits / entries, modifications and deletions
+- Export of territories in PDF
+- Automatic export of the S-13
+- Import and export data with encryption
 
 # Installation
 ## Windows
-Télécharger et exécuter [l’exécutable](https://github.com/osajw/terr-helper/releases/download/v1.0.0/Territory-Helper-Setup-1.0.0.exe).
+Download and run [the executable](https://github.com/osajw/terr-helper/releases/download/v1.1.0/Territory-Helper-Setup-1.1.0.exe).
 
-## Serveur
+## Server
 ```sh
 nano .env # edit all DB_... and MAIL_...
 composer install
@@ -23,8 +24,8 @@ php artisan jwt:secret
 php artisan migrate
 ```
 
-# Sécurité
-Aucune donnée n’est stockée en ligne. L’application est 100% locale. Pour plus de sécurité et protéger les donnés, installer l’application sur un disque crypté (via [Veracrypt](https://www.veracrypt.fr/code/VeraCrypt/) par exemple).
+# Security
+No data is stored online. The application is 100% local. For more security and data protection, install the application on an encrypted disk (via [Veracrypt](https://www.veracrypt.fr/code/VeraCrypt/) for example).
 
-# Contribution et bugs
-Le projet est ouvert aux contributions (via [pull request](https://github.com/osajw/terr-helper/pulls)). Si vous rencontrez un bug vous pouvez le signaler [ici](https://github.com/osajw/terr-helper/issues).
+# Contribution and bugs
+The project is open to contributions (via [pull request](https://github.com/osajw/terr-helper/pulls)). If you encounter a bug you can report it [here](https://github.com/osajw/terr-helper/issues).

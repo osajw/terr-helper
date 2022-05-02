@@ -21,7 +21,7 @@
               :items="[{ add: true }, ...sortedPeoples]"
               :rules="peopleRules"
               :item-text="getPeoleName"
-              label="Sorti par :"
+              :label="$t('territory.outBy')"
               item-value="id"
             >
               <template v-slot:selection="data">
@@ -34,7 +34,7 @@
                   </v-list-item-title>
                   <v-list-item-subtitle>
                     <v-icon v-if="data.item.add">{{ mdiPlus }}</v-icon>
-                    {{ data.item.add ? 'Ajouter une personne' : data.item.email || data.item.phone }}
+                    {{ data.item.add ? $t('territory.addPeople') : data.item.email || data.item.phone }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action v-if="!data.item.add">
@@ -42,30 +42,30 @@
                 </v-list-item-action>
               </template>
             </v-autocomplete>
-            <DialogPickerDialog v-model="form.outAt" label="Date de sortie :" />
-            <DialogPickerDialog v-model="form.inAt" label="Date de rentrée :" />
+            <DialogPickerDialog v-model="form.outAt" :label="$tcolon('territory.outAt')" />
+            <DialogPickerDialog v-model="form.inAt" :label="$tcolon('territory.inAt')" />
           </v-form>
         </v-container>
       </v-card-text>
       <v-card-actions>
-        <v-btn color="error" class="mr-4" text @click="rm">Supprimer</v-btn>
+        <v-btn color="error" class="mr-4" text @click="rm">{{ $t('form.delete') }}</v-btn>
         <v-spacer />
-        <v-btn color="warning" text @click="close">Annuler</v-btn>
-        <v-btn :disabled="!valid" color="success" class="mr-4" elevation="0" @click="save">Enregistrer</v-btn>
+        <v-btn color="warning" text @click="close">{{ $t('form.cancel') }}</v-btn>
+        <v-btn :disabled="!valid" color="success" class="mr-4" elevation="0" @click="save">{{ $t('form.save') }}</v-btn>
       </v-card-actions>
     </v-card>
     <v-dialog v-model="showDialogPrint" persistent max-width="290">
       <v-card>
         <v-card-title class="headline">
-          Envoyer le pdf ?
+          {{ $t('territory.addImage') }}
         </v-card-title>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="base darken-1" text @click="close">
-            Non
+            {{ $t('form.no') }}
           </v-btn>
           <v-btn color="base darken-1" text @click="sendPdf">
-            Oui
+            {{ $t('form.yes') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -115,7 +115,7 @@ export default {
       mdiPencil,
       form: {},
       valid: false,
-      peopleRules: [v => !!v || 'Champ obligatoire'],
+      peopleRules: [v => !!v || this.$t('form.requiredField')],
       showDialogPrint: false,
       showDialogPeople: false,
       editPeopleId: ''

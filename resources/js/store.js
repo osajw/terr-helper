@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import i18n from './plugins/i18n'
 import { printS13 } from './utilities/print'
 import { encryptObj, decryptObj } from './utilities/crypt'
 import axios from 'axios'
@@ -24,7 +25,7 @@ function openFile (accept) {
           json = JSON.parse(result)
           resolve(json)
         } catch (error) {
-          alert('Veuillez entrer un fichier .json valide !')
+          alert(i18n.t('error.providValidJson'))
           resolve(null)
         }
       })
@@ -45,8 +46,8 @@ const api = (type, token, id, method = 'GET', data = {}) => {
     method
   }).then(({ data }) => {
     if ((data || {}).status === 'Token is Expired') {
-      alert('Session expirée, veillez vous reconnecter')
-      window.location.reload()
+      alert()
+      window.location.reload(i18n.t('error.sessionExpired'))
     }
     return data
   })
@@ -166,7 +167,7 @@ export default new Vuex.Store({
         const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(json, null, 2))
         const downloadAnchorNode = document.createElement('a')
         downloadAnchorNode.setAttribute('href', dataStr)
-        downloadAnchorNode.setAttribute('download', 'territoires.json')
+        downloadAnchorNode.setAttribute('download', i18n.t('file.territoriesJson'))
         document.body.appendChild(downloadAnchorNode) // required for firefox
         downloadAnchorNode.click()
         downloadAnchorNode.remove()

@@ -11,23 +11,23 @@
         <v-btn icon dark @click="dialog = false">
           <v-icon>{{ mdiClose }}</v-icon>
         </v-btn>
-        <v-toolbar-title>{{ id == 'new' ? 'Créer' : 'Modifier' }} une personne</v-toolbar-title>
+        <v-toolbar-title>{{ $t(`territory.${id == 'new' ? 'create' : 'edit'}People`) }}</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-container>
           <v-form ref="form" class="BasicForm" v-model="valid" lazy-validation>
-            <v-text-field v-model="form.firstname" :rules="firstnameRules" label="Prénom :" required />
-            <v-text-field v-model="form.lastname" :rules="lastnameRules" label="Nom de famille :" required />
-            <v-text-field v-model="form.email" :rules="emailRules" label="Adresse e-mail :"  />
-            <v-text-field v-model="form.phone" :rules="phoneRules" label="Numéro de téléphone :"  />
+            <v-text-field v-model="form.firstname" :rules="firstnameRules" :label="$tcolon('form.firstname')" required />
+            <v-text-field v-model="form.lastname" :rules="lastnameRules" :label="$tcolon('form.lastname')" required />
+            <v-text-field v-model="form.email" :rules="emailRules" :label="$tcolon('form.email')"  />
+            <v-text-field v-model="form.phone" :rules="phoneRules" :label="$tcolon('form.phone')"  />
           </v-form>
         </v-container>
       </v-card-text>
       <v-card-actions>
-        <v-btn color="error" class="mr-4" text @click="rm">Supprimer</v-btn>
+        <v-btn color="error" class="mr-4" text @click="rm">{{ $t('form.delete') }}</v-btn>
         <v-spacer />
-        <v-btn color="warning" text @click="close">Annuler</v-btn>
-        <v-btn :disabled="!valid" color="success" class="mr-4" elevation="0" @click="save">Enregistrer</v-btn>
+        <v-btn color="warning" text @click="close">{{ $t('form.cancel') }}</v-btn>
+        <v-btn :disabled="!valid" color="success" class="mr-4" elevation="0" @click="save">{{ $t('form.save') }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -54,12 +54,12 @@ export default {
       mdiClose,
       form: {},
       firstnameRules: [
-        v => !!v || 'Prénom obligatoire',
-        v => (v && v.length >= 2) || 'Prénom trop petit'
+        v => !!v || this.$t('form.firstnameRequired'),
+        v => (v && v.length >= 2) || this.$t('form.firstnameTooSmall')
       ],
       lastnameRules: [
-        v => !!v || 'Nom de famille obligatoire',
-        v => (v && v.length >= 2) || 'Nom trop petit'
+        v => !!v || this.$t('form.lastnameRequired'),
+        v => (v && v.length >= 2) || this.$t('form.lastnameTooSmall')
       ],
       emailRules: [],
       phoneRules: [],

@@ -21,8 +21,8 @@ export default {
   data () {
     return {
       items: [
-        { icon: mdiMapLegend, path: '/territory', label: 'Territoires' },
-        { icon: mdiHistory, path: '/history', label: 'Historique' }
+        { icon: mdiMapLegend, path: '/territory', label: this.$t('territory.plural') },
+        { icon: mdiHistory, path: '/history', label: this.$t('history.label') }
       ],
       activeI: 0
     }

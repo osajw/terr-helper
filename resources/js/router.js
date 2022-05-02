@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from './store'
+import i18n from './plugins/i18n'
 
 Vue.use(VueRouter)
 
@@ -15,7 +16,7 @@ const routes = [
     name: 'Territory',
     component: () => import(/* webpackChunkName: "Territory" */ './views/Territory.vue'),
     meta: {
-      title: 'Territoires',
+      title: i18n.t('territory.plural'),
       auth: true
     }
   },
@@ -24,7 +25,7 @@ const routes = [
     name: 'History',
     component: () => import(/* webpackChunkName: "History" */ './views/History.vue'),
     meta: {
-      title: 'Historique',
+      title: i18n.t('history.label'),
       auth: true
     }
   },

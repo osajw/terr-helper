@@ -11,10 +11,10 @@
         v-on="on"
       />
     </template>
-    <v-date-picker v-model="date" :first-day-of-week="1" locale="fr" scrollable>
+    <v-date-picker v-model="date" :first-day-of-week="parseInt($t('firstDayOfWeek') || '1')" :locale="$i18n.locale" scrollable>
       <v-spacer></v-spacer>
-      <v-btn text color="primary" @click="modal = false">Annuler</v-btn>
-      <v-btn text color="primary" @click="$refs.dialog.save(date)">OK</v-btn>
+      <v-btn text color="primary" @click="modal = false">{{ $t('form.cancel') }}</v-btn>
+      <v-btn text color="primary" @click="$refs.dialog.save(date)">{{ $t('form.ok') }}</v-btn>
     </v-date-picker>
   </v-dialog>
 </template>
@@ -47,8 +47,8 @@ export default {
   computed: {
     dateFormatted () {
       if (!this.date) return null
-      const [year, month, day] = this.date.split('-')
-      return `${day}/${month}/${year}`
+      const [yy, mm, dd] = this.date.split('-')
+      return this.$t('date', { dd, mm, yy })
     },
     date: {
       get () { return this.value },

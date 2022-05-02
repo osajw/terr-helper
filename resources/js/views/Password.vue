@@ -4,7 +4,10 @@
       <v-progress-circular v-if="!ready" indeterminate color="primary" />
       <v-slide-y-transition>
         <v-card v-if="ready && !needPassword" outlined>
-          <v-card-title class="headline">Entrer votre mot de passe :</v-card-title>
+          <v-card-title class="headline">
+            <LocaleChanger small />
+            <span>{{ $tcolon('password.enterYour') }}</span>
+          </v-card-title>
           <v-form ref="loginForm" v-model="isFormLoginValid" @submit.prevent="login">
             <v-text-field
               v-model="form.password"
@@ -12,7 +15,7 @@
               :rules="passwordRulesSimple"
               :error-messages="errPwd"
               :prepend-icon="mdiLock"
-              label="Mot de passe"
+              :label="$t('password.label')"
               name="password"
               type="password"
               required
@@ -22,27 +25,30 @@
           </v-form>
           <v-card-actions>
             <v-btn :disabled="!isFormLoginValid" class="mb-2" color="primary" @click="login">
-              Valider
+              {{ $t('form.validate') }}
             </v-btn>
           </v-card-actions>
         </v-card>
       </v-slide-y-transition>
       <v-slide-y-transition>
         <v-card v-if="ready && needPassword" outlined>
-          <v-card-title class="headline">Créer un mot de passe :</v-card-title>
+          <v-card-title class="headline">
+            <LocaleChanger small />
+            <span>{{ $tcolon('password.create') }}</span>
+          </v-card-title>
           <v-card-text>
-            <span class="info">Le mot de passe sera utilisé à chaque fois que vous ouvrirez l'application. <b>Le mot de passe ne pourra PAS être changé</b></span>
+            <span class="info">{{ $t('password.info') }} <b>{{ $t('password.cantBeChange') }}</b></span>
             <v-form ref="registerForm" v-model="isFormRegisterValid" @submit.prevent="createAccount">
-              <v-text-field v-model="form.password" ref="password" label="Mot de passe" :rules="passwordRules"
+              <v-text-field v-model="form.password" ref="password" :label="$t('password.label')" :rules="passwordRules"
                 :prepend-icon="mdiLock" name="password" type="password" required />
-              <v-text-field v-model="form.c_password" label="Confirmation du mot de passe" :rules="c_passwordRules"
+              <v-text-field v-model="form.c_password" :label="$t('password.confirm')" :rules="c_passwordRules"
                 :prepend-icon="mdiLock" name="c_password" type="password" @keyup.enter.native="createAccount" />
             </v-form>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn :disabled="!isFormRegisterValid" class="mb-2" color="primary" @click="createAccount">
-              Créer
+              {{ $t('form.create') }}
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -53,9 +59,13 @@
 
 <script>
 import { mdiLock } from '@mdi/js'
+import LocaleChanger from '../components/LocaleChanger'
 
 export default {
   name: 'Password',
+  components: {
+    LocaleChanger
+  },
   data () {
     return {
       mdiLock,
@@ -72,12 +82,12 @@ export default {
         v => !!v || ''
       ],
       passwordRules: [
-        v => !!v || 'Le mot de passe est nécessaire',
-        v => (!!v && v.length >= 6) || 'Le mot de passe doit comporter plus de 6 caractères'
+        v => !!v || this.$t('password.isNecessary'),
+        v => (!!v && v.length >= 6) || this.$t('password.min6Char')
       ],
       c_passwordRules: [
-        v => !!v || 'Le mot de passe est nécessaire',
-        v => v === this.form.password || 'Les mots de passe doivent être identiques'
+        v => !!v || this.$t('password.isNecessary'),
+        v => v === this.form.password || this.$t('password.mustBeIdentical')
       ],
       errPwd: ''
     }
@@ -108,13 +118,22 @@ export default {
     login () {
       this.$store.dispatch('checkPassword', this.form.password).then(() => {
         this.$router.push({ path: '/' })
-      }).catch(() => (this.errPwd = 'Mauvais mot de passe'))
+      }).catch(() => (this.errPwd = this.$t('password.bad')))
     }
   }
 }
 </script>
 
 <style lang="scss">
-// .Password {
-// }
+.Password {
+  .headline {
+    display: grid;
+    grid-template-columns: 50px 1fr 50px;
+    gap: 12px;
+    > .v-btn {
+      opacity: 0.5;
+      min-width: 50px;
+    }
+  }
+}
 </style>

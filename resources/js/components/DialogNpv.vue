@@ -11,17 +11,16 @@
         <v-btn icon dark @click="dialog = false">
           <v-icon>{{ mdiClose }}</v-icon>
         </v-btn>
-        <v-toolbar-title v-if="data.id">{{ data.id.slice(0, 3) == 'new' ? 'Créer' : 'Modifier' }} un npv</v-toolbar-title>
+        <v-toolbar-title v-if="data.id">{{ $t(`territory.${data.id.slice(0, 3) == 'new' ? 'create' : 'edit'}DoNotVisit`) }}</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-container>
           <v-form ref="form" class="BasicForm" v-model="valid" lazy-validation>
-            <DialogPickerDialog v-model="form.date" label="Date :" />
-            <v-textarea v-model="form.address" label="Adresse :" rows="2" auto-grow />
+            <DialogPickerDialog v-model="form.date" :label="$tcolon('form.date')" />
+            <v-textarea v-model="form.address" :label="$tcolon('form.address')" rows="2" auto-grow />
             <div v-if="!form.planUrl" class="d-flex mt-2">
-              <v-btn class="flex-grow-1" depressed @click="uploadFile"><v-icon left dark>{{ mdiCloudUpload }}</v-icon> Ajouter un plan</v-btn>
+              <v-btn class="flex-grow-1" depressed @click="uploadFile"><v-icon left dark>{{ mdiCloudUpload }}</v-icon> {{ $t('territory.addPlan') }}</v-btn>
             </div>
-            <!-- <v-text-field v-model="form.planUrl" label="Plan (URL ou Data-URI) :" clearable /> -->
           </v-form>
         </v-container>
       </v-card-text>
@@ -31,10 +30,10 @@
       </div>
       <p v-if="uploadFileError" class="red--text text--lighten-1 mb-1 mx-auto">{{ uploadFileError }}</p>
       <v-card-actions>
-        <v-btn color="error" class="mr-4" text @click="rm">Supprimer</v-btn>
+        <v-btn color="error" class="mr-4" text @click="rm">{{ $t('form.delete') }}</v-btn>
         <v-spacer />
-        <v-btn color="warning" text @click="close">Annuler</v-btn>
-        <v-btn :disabled="!valid" color="success" class="mr-4" elevation="0" @click="save">Enregistrer</v-btn>
+        <v-btn color="warning" text @click="close">{{ $t('form.cancel') }}</v-btn>
+        <v-btn :disabled="!valid" color="success" class="mr-4" elevation="0" @click="save">{{ $t('form.save') }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -130,7 +129,7 @@ export default {
             if (typeof data === 'string') { data = JSON.parse(data) }
             let msg = data?.error || data?.file || data?.name
             if (Array.isArray(msg)) { msg = msg.join(', ')}
-            this.uploadFileError = `Une erreur est survenue veuillez réessayer ultérieurement${msg ? ` [${msg}]` : ''}.`
+            this.uploadFileError = this.$t(`error.occurred${msg ? 'WithMsg' : ''}`, { msg })
           })
       }
       input.click()

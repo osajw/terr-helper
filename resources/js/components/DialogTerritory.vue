@@ -11,21 +11,21 @@
         <v-btn icon dark @click="dialog = false">
           <v-icon>{{ mdiClose }}</v-icon>
         </v-btn>
-        <v-toolbar-title>{{ id == 'new' ? 'Créer' : 'Modifier' }} un territoire</v-toolbar-title>
+        <v-toolbar-title>{{ $t(`territory.${id == 'new' ? 'create' : 'edit'}`)  }}</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-container>
           <v-form ref="form" class="BasicForm mb-4" v-model="valid" lazy-validation>
-            <v-text-field v-model="form.name" :rules="nameRules" label="Nom :" required />
-            <v-textarea v-model="form.desc" label="Description :" rows="2" auto-grow />
-            <v-slider v-model="form.difficulty" label="Difficulté :" :max="10" class="align-center">
+            <v-text-field v-model="form.name" :rules="nameRules" :label="$tcolon('form.name')" required />
+            <v-textarea v-model="form.desc" :label="$tcolon('form.description')" rows="2" auto-grow />
+            <v-slider v-model="form.difficulty" :label="$tcolon('form.difficulty')" :max="10" class="align-center">
               <template v-slot:append>
                 <v-text-field :value="form.difficulty" class="mt-0 pt-0" type="number" style="width: 60px" readonly />
               </template>
             </v-slider>
-            <v-btn v-if="errorImage && form.name" elevation="0" style="width: 100%;" @click="uploadFile"><v-icon left dark>{{ mdiCloudUpload }}</v-icon> Ajouter une image</v-btn>
+            <v-btn v-if="errorImage && form.name" elevation="0" style="width: 100%;" @click="uploadFile"><v-icon left dark>{{ mdiCloudUpload }}</v-icon> {{ $t('territory.addImage') }}</v-btn>
           </v-form>
-          <h4>Personnes à ne pas visiter :</h4>
+          <h4>{{ $tcolon('territory.doNotVisitLong') }}</h4>
           <div v-if="!hideNpv" class="npvs">
             <v-card v-for="npv in terrNpvs" :key="npv.id" class="npv" outlined flat>
               <v-card-title>
@@ -39,7 +39,7 @@
               </v-card-text>
               <v-img v-if="npv.planUrl" :src="$npvUrl(npv.planUrl)" />
             </v-card>
-            <v-btn class="add-npv" depressed @click="createNpv"><v-icon left dark>{{ mdiAccountPlus }}</v-icon> Ajouter</v-btn>
+            <v-btn class="add-npv" depressed @click="createNpv"><v-icon left dark>{{ mdiAccountPlus }}</v-icon> {{ $t('form.add') }}</v-btn>
           </div>
         </v-container>
       </v-card-text>
@@ -66,10 +66,10 @@
         </template>
       </v-virtual-scroll>
       <v-card-actions>
-        <v-btn color="error" class="mr-4" text @click="rm">Supprimer</v-btn>
+        <v-btn color="error" class="mr-4" text @click="rm">{{ $t('form.delete') }}</v-btn>
         <v-spacer />
-        <v-btn color="warning" text @click="close">Annuler</v-btn>
-        <v-btn :disabled="!valid" color="success" class="mr-4" elevation="0" @click="save">Enregistrer</v-btn>
+        <v-btn color="warning" text @click="close">{{ $t('form.cancel') }}</v-btn>
+        <v-btn :disabled="!valid" color="success" class="mr-4" elevation="0" @click="save">{{ $t('form.save') }}</v-btn>
       </v-card-actions>
     </v-card>
     <DialogNpv :visibility.sync="showDialogNpv" :data="npvForm" @update="getNpvUpdate" />
@@ -109,8 +109,8 @@ export default {
       mdiSwapHorizontal,
       form: {},
       nameRules: [
-        v => !!v || 'Nom obligatoire',
-        v => (v && v.length >= 2) || 'Nom trop petit'
+        v => !!v || this.$t('form.nameRequired'),
+        v => (v && v.length >= 2) || this.$t('form.nameTooSmall')
       ],
       valid: false,
       showDialogNpv: false,
@@ -237,14 +237,14 @@ export default {
             if (typeof data === 'string') { data = JSON.parse(data) }
             let msg = data?.error || data?.file || data?.name
             if (Array.isArray(msg)) { msg = msg.join(', ')}
-            this.uploadFileError = `Une erreur est survenue veuillez réessayer ultérieurement${msg ? ` [${msg}]` : ''}.`
+            this.uploadFileError = this.$t(`error.occurred${msg ? 'WithMsg' : ''}`, { msg })
           })
       }
       input.click()
     },
     peopleName (id) {
       const people = this.peoples.find(p => p.id === id)
-      return people ? `${people.firstname} ${people.lastname}` : 'Personne supprimée'
+      return people ? `${people.firstname} ${people.lastname}` : this.$t('territory.peopleDeleted')
     }
   }
 }

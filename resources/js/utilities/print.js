@@ -1,5 +1,9 @@
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from './vfs_fonts'
+import i18n from '../plugins/i18n'
+
+const $t = v => i18n.t(v)
+
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 pdfMake.fonts = {
   Roboto: {
@@ -40,12 +44,12 @@ const getGreeting = () => {
   const curHr = today.getHours()
   const curMn = today.getMinutes()
   if (curHr >= 18 || (curHr === 17 && curMn > 30)) { // after 17h30
-    return ['Bonsoir', 'Bonne soirée !']
+    return [$t('greeting.goodEvening'), $t('greeting.haveNiceEvening')]
   }
   if (curHr >= 13) { // after 13h
-    return ['Bonjour', 'Bon après-midi !']
+    return [$t('greeting.hello'), $t('greeting.goodAfternoon')]
   }
-  return ['Bonjour', 'Bonne journée !']
+  return [$t('greeting.hello'), $t('greeting.haveNiceDay')]
 }
 
 export async function printTerr (terr, shareTo) {
@@ -185,16 +189,16 @@ export async function printS13 ({ territories: terr, peoples, withdrawals }) {
   }
   const peopleName = (id) => {
     const p = peoples.find(p => p.id === id)
-    if (!p) { return 'Personne inconnu' }
+    if (!p) { return $t('s13.unknownPerson') }
     return max16Char(`${p.firstname} ${p.lastname.split(' ').map(s => s.slice(0, 2).toUpperCase()).join(' ')}${p.lastname.slice(-1) === '.' ? '' : '.'}`)
   }
   const createPage = (terrs) => {
-    dd.content.push({ text: 'REGISTRE D’ATTRIBUTION DES TERRITOIRES', style: 'header' }) // title
+    dd.content.push({ text: $t('s13.title'), style: 'header' }) // title
     dd.content.push({
       margin: [-5, 0, 0, -4],
       table: {
         body: [
-          [{ text: 'Année de service : ', border: Array(4), bold: 1, fontSize: 14},
+          [{ text: $t('s13.year') + $t(':'), border: Array(4), bold: 1, fontSize: 14},
            { text: '', border: [0, 0, 0, 1] },
            { text: new Date().getFullYear(), border: [0, 0, 0, 1] },
            { text: '', border: [0, 0, 0, 1] }]
@@ -211,13 +215,13 @@ export async function printS13 ({ territories: terr, peoples, withdrawals }) {
     const body = inOutTable.table.body
     // header:
     body.push([
-      { text: '\nTerr. n°', rowSpan: 2, fillColor: '#d9d9d9', font: 'Roboto' },
-      { text: 'Parcouru pour la dernière fois le *', rowSpan: 2, fillColor: '#d9d9d9', font: 'Roboto' },
-      ...Array(4).fill(0).reduce(a => [...a, { text: 'Attribué à', colSpan: 2, fillColor: '#d9d9d9', font: 'Roboto' }, ''], [])
+      { text: '\n' + $t('s13.territoryNumber'), rowSpan: 2, fillColor: '#d9d9d9', font: 'Roboto' },
+      { text: $t('s13.lastDone') + ' *', rowSpan: 2, fillColor: '#d9d9d9', font: 'Roboto' },
+      ...Array(4).fill(0).reduce(a => [...a, { text: $t('s13.attributedTo'), colSpan: 2, fillColor: '#d9d9d9', font: 'Roboto' }, ''], [])
     ])
     body.push([ '', '', ...Array(4).fill(0).reduce(a => [...a,
-      { text: 'Attribué le', fillColor: '#d9d9d9', font: 'Roboto' },
-      { text: 'Entièrement parcouru le', fillColor: '#d9d9d9', font: 'Roboto' },
+      { text: $t('s13.attributedAt'), fillColor: '#d9d9d9', font: 'Roboto' },
+      { text: $t('s13.coveredAt'), fillColor: '#d9d9d9', font: 'Roboto' },
     ], [])])
     // end header
     const getShortName = (name = '') => name.length > 5 ? name.slice(0, 5) + '…' : name
@@ -244,13 +248,13 @@ export async function printS13 ({ territories: terr, peoples, withdrawals }) {
     dd.content.push(inOutTable)
     // last lines:
     dd.content.push({
-      text: '* Lorsque vous commencez une nouvelle feuille, notez dans cette colonne la date à laquelle chaque territoire a été entièrement parcouru pour la dernière fois.',
+      text: '* ' + $t('s13.lastDoneNote'),
 		  alignment: 'left',
 		  fontSize: 10,
 		  margin: [0, 0, 0, 0]
     })
     dd.content.push({
-      text: 'S-13-F 1/22',
+      text: $t('s13.ref'),
 		  alignment: 'left',
 		  fontSize: 10,
 		  margin: [0, 10, 0, 0]

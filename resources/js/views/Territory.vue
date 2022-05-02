@@ -3,16 +3,16 @@
     <v-card :outlined="$vuetify.theme.dark" class="filters" tile>
       <v-chip-group show-arrows>
         <v-chip class="ma-2" color="red darken-1" :outlined="filter == 'toIn'" :text-color="filter == 'toIn' ? '' : 'white'"  label link @click="filter = filter == 'toIn' ? '' : 'toIn'">
-          <v-icon left>{{ mdiRedoVariant }}</v-icon>À rentrer
+          <v-icon left>{{ mdiRedoVariant }}</v-icon>{{ $t('territory.toIn') }}
         </v-chip>
         <v-chip class="ma-2" color="orange darken-1" :outlined="filter == 'toOut'" :text-color="filter == 'toOut' ? '' : 'white'"  label link @click="filter = filter == 'toOut' ? '' : 'toOut'">
-          <v-icon left style="transform: rotate(180deg)">{{ mdiRedoVariant }}</v-icon>À sortir
+          <v-icon left style="transform: rotate(180deg)">{{ mdiRedoVariant }}</v-icon>{{ $t('territory.toOut') }}
         </v-chip>
         <v-chip class="ma-2" color="primary darken-1" :outlined="filter == 'outBy'" :text-color="filter == 'outBy' ? '' : 'white'" label link @click="toggleFilterOutBy">
-          Sorti par
+          {{ $t('territory.outBy') }}
         </v-chip>
         <v-chip class="ma-2" label link :outlined="!filter"  @click="filter = ''">
-          Tous
+          {{ $t('territory.all') }}
         </v-chip>
       </v-chip-group>
     </v-card>
@@ -22,15 +22,15 @@
     <div class="content">
       <v-card :outlined="$vuetify.theme.dark" class="filters-2" elevation="0">
         <v-chip-group show-arrows>
-          <span class="ml-2 mr-4">Trier par:</span>
+          <span class="ml-2 mr-4">{{ $t('territory.sortBy') }}</span>
           <v-chip :color="shortBy == 'name' ? 'green' : 'grey'" text-color="#fff" label link @click="setShortBy('name')">
-            Nom <v-btn v-if="shortBy == 'name'" icon x-small dark><v-icon>{{ shortDesc ? mdiChevronDown : mdiChevronUp }}</v-icon></v-btn>
+            {{ $t('territory.name') }} <v-btn v-if="shortBy == 'name'" icon x-small dark><v-icon>{{ shortDesc ? mdiChevronDown : mdiChevronUp }}</v-icon></v-btn>
           </v-chip>
           <v-chip :color="shortBy == 'difficulty' ? 'green' : 'grey'" text-color="#fff" label link @click="setShortBy('difficulty')">
-            Difficulté <v-btn v-if="shortBy == 'difficulty'" icon x-small dark><v-icon>{{ shortDesc ? mdiChevronDown : mdiChevronUp }}</v-icon></v-btn>
+            {{ $t('territory.difficulty') }} <v-btn v-if="shortBy == 'difficulty'" icon x-small dark><v-icon>{{ shortDesc ? mdiChevronDown : mdiChevronUp }}</v-icon></v-btn>
           </v-chip>
           <v-chip :color="shortBy == 'days' ? 'green' : 'grey'" text-color="#fff" label link @click="setShortBy('days')">
-            Date <v-btn v-if="shortBy == 'days'" icon x-small dark><v-icon>{{ shortDesc ? mdiChevronDown : mdiChevronUp }}</v-icon></v-btn>
+            {{ $t('territory.date') }} <v-btn v-if="shortBy == 'days'" icon x-small dark><v-icon>{{ shortDesc ? mdiChevronDown : mdiChevronUp }}</v-icon></v-btn>
           </v-chip>
           <v-chip link @click="openSearch">
             <v-icon>{{ mdiMagnify }}</v-icon><span v-if="search">"{{ search }}"<v-icon>{{ mdiClose }}</v-icon></span>
@@ -39,23 +39,23 @@
       </v-card>
       <div v-if="selectedUser && filter === 'outBy'" style="height: 50px; max-width: 600px; margin: auto">
         <v-list-item-title class="d-flex justify-space-between">
-          <span class="text-h5 px-6"><b>Sorti par {{ peopleName(peoplesById[selectedUser]) }}</b></span>
+          <span class="text-h5 px-6"><b>{{ $t('territory.outBy') }} {{ peopleName(peoplesById[selectedUser]) }}</b></span>
           <v-btn icon @click="showDialogPeople = true; editPeopleId = selectedUser">
             <v-icon>{{ mdiPencil }}</v-icon>
           </v-btn>
         </v-list-item-title>
       </div>
       <v-alert v-else-if="!territoriesFiltered.length && !search.length" border="left" type="info" class="mt-6" style="max-width: 800px; margin: auto" text>
-      Vous n'avez aucun territoire pour le moment. Vous pouvez en créer un via le bouton <v-btn color="primary" elevation="2" x-small fab><v-icon>{{ mdiPlus }}</v-icon></v-btn> en bas. <br>
-      Vous pouvez aussi en importer via le bouton <v-btn :light="!$vuetify.theme.dark" :dark="$vuetify.theme.dark" fab elevation="2" x-small><v-icon>{{ mdiDotsVertical }}</v-icon></v-btn> en haut à droite.
+      {{ $t('territory.noData').split('#btn')[0] }} <v-btn color="primary" elevation="2" x-small fab><v-icon>{{ mdiPlus }}</v-icon></v-btn> {{ $t('territory.noData').split('#btn')[1] }}<br>
+      {{ $t('territory.importData').split('#btn')[0] }} <v-btn :light="!$vuetify.theme.dark" :dark="$vuetify.theme.dark" fab elevation="2" x-small><v-icon>{{ mdiDotsVertical }}</v-icon></v-btn> {{ $t('territory.importData').split('#btn')[1] }}
       </v-alert>
       <v-alert v-if="(!territoriesFiltered.length && search.length) || (selectedUser && filter === 'outBy' && !territoriesSorted.length)" border="left" type="warning" class="mt-6" style="max-width: 800px; margin: auto" text>
-      Aucun résultat trouvé.
+        {{ $t('territory.noResult') }}
       </v-alert>
       <v-virtual-scroll v-if="territoriesSorted.length" :items="territoriesSorted" :height="height - 64 * 4 - (selectedUser ? 50 : 0)" bench="3" item-height="160">
         <template v-slot:default="{ item: terr, index }">
           <v-card outlined>
-            <v-alert v-if="terr.oldWithdrawal" border="left" type="success" dense style="position: absolute;right: 0;top: 0;left: 0; border-radius: 4px 4px 0 0;">Rentré</v-alert>
+            <v-alert v-if="terr.oldWithdrawal" border="left" type="success" dense style="position: absolute;right: 0;top: 0;left: 0; border-radius: 4px 4px 0 0;">{{ $t('territory.isIn') }}</v-alert>
             <v-list-item :style="terr.oldWithdrawal ? 'margin-top: 45px': ''" three-line>
               <v-list-item-content>
                 <v-list-item-title class="d-flex flex-nowrap">
@@ -65,7 +65,7 @@
                 <v-list-item-subtitle class="d-flex flex-nowrap my-2">
                   <v-chip class="flex-shrink-0 mr-2" outlined>
                     <v-icon v-if="terr.outAt || terr.inAt">{{ mdiCalendar }}</v-icon>
-                    <span class="red--text" v-else>Jamais sorti</span>
+                    <span class="red--text" v-else>{{ $t('territory.neverOut') }}</span>
                     <span v-if="terr.outAt"> {{ $formatDate(terr.outAt) }}</span>
                     <span v-if="terr.inAt"> - {{ $formatDate(terr.inAt) }}</span>
                   </v-chip>
@@ -74,11 +74,11 @@
                 </v-list-item-subtitle>
                 <v-list-item-subtitle v-if="!terr.oldWithdrawal" class="d-flex flex-nowrap">
                   <v-btn v-if="terr.needOut || terr.inAt" :color="terr.needOut ? 'warning' :''" :outlined="!terr.needOut" :small="!terr.needOut" @click="inOrOut(terr)">
-                    <span>Sortir</span>
+                    <span>{{ $t('territory.takeOut') }}</span>
                     <v-icon small>{{ terr.needOut ? mdiClockAlertOutline : mdiBookArrowRightOutline }}</v-icon>
                   </v-btn>
                   <v-btn v-if="terr.needIn || (terr.outAt && !terr.inAt)" :color="terr.needIn ? 'red' :''" :outlined="!terr.needIn" :small="!terr.needIn" @click="inOrOut(terr, true)">
-                    <span>Rentrer</span>
+                    <span>{{ $t('territory.return') }}</span>
                     <v-icon small>{{ terr.needIn ? mdiClockAlertOutline : mdiBookArrowLeftOutline }}</v-icon>
                   </v-btn>
                   <span v-if="terr.by && !terr.inAt" class="flex-shrink-0 ml-2">
@@ -111,9 +111,9 @@
           <v-btn icon dark @click="showDialogSelectUser = false; filter = ''; searchPeople = ''">
             <v-icon>{{ mdiClose }}</v-icon>
           </v-btn>
-          <v-toolbar-title>Trouver une personne</v-toolbar-title>
+          <v-toolbar-title>{{ $t('territory.findPeople') }}</v-toolbar-title>
         </v-toolbar>
-        <v-text-field v-model="searchPeople" ref="searchUser" placeholder="Recherche" class="mx-4" clearable />
+        <v-text-field v-model="searchPeople" ref="searchUser" :placeholder="$t('territory.search')" class="mx-4" clearable />
         <v-virtual-scroll :bench="1" :items="filteredPeoples" :height="height - 175" item-height="66">
           <template v-slot:default="{ item }">
             <v-list-item :key="item.id" @click="selectedUser = item.id; showDialogSelectUser = false; searchPeople = ''" style="height: 66px">
@@ -137,20 +137,20 @@
         </v-virtual-scroll>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="warning" text @click="showDialogSelectUser = false; filter = ''; searchPeople = ''">Annuler</v-btn>
-          <v-btn color="success" text @click="showDialogPeople = true; editPeopleId = 'new'; searchPeople = ''">Ajouter</v-btn>
+          <v-btn color="warning" text @click="showDialogSelectUser = false; filter = ''; searchPeople = ''">{{ $t('form.cancel') }}</v-btn>
+          <v-btn color="success" text @click="showDialogPeople = true; editPeopleId = 'new'; searchPeople = ''">{{ $t('form.add') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
     <v-dialog :value="dialogSelectPeople" max-width="300" @input="cbSelectPeople()">
       <v-card>
-        <v-card-title>Envoyer à ?</v-card-title>
+        <v-card-title>{{ $t('territory.askSendTo') }}</v-card-title>
         <v-card-text>
           <v-autocomplete
             v-model="selectedPeopleId"
             :items="sortedPeoples"
             :item-text="peopleName"
-            label="Personne :"
+            :label="$t('territory.people')"
             item-value="id"
             clearable
           >
@@ -162,17 +162,17 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="warning darken-1" text @click="cbSelectPeople(true)">
-            Annuler
+            {{ $t('form.cancel') }}
           </v-btn>
           <v-btn color="green darken-1" text @click="cbSelectPeople()">
-            Envoyer
+            {{ $t('form.send') }}
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
     <v-dialog v-model="showSearch" content-class="Territory__search" hide-overlay>
       <v-card>
-        <v-text-field v-model="search" ref="searchInput" placeholder="Recherche" @blur="onSearchBlur" @keydown="onSearchKey" />
+        <v-text-field v-model="search" ref="searchInput" :placeholder="$t('territory.search')" @blur="onSearchBlur" @keydown="onSearchKey" />
         <v-btn icon @click="search = ''; showSearch = false">
           <v-icon>{{ mdiClose }}</v-icon>
         </v-btn>
@@ -384,7 +384,7 @@ export default {
       return this.territoriesWithInfos.filter(t => !t.inAt && t.by && t.by.id === id).length
     },
     peopleName (people) {
-      return people ? `${people.firstname} ${people.lastname}` : 'Personne supprimée'
+      return people ? `${people.firstname} ${people.lastname}` : this.$t('territory.peopleDeleted')
     }
   }
 }

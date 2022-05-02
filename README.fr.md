@@ -30,3 +30,17 @@ Aucune donnée n’est stockée en ligne. L’application est 100% locale. Pour 
 
 # Contribution et bugs
 Le projet est ouvert aux contributions (via [pull request](https://github.com/osajw/terr-helper/pulls)). Si vous rencontrez un bug vous pouvez le signaler [ici](https://github.com/osajw/terr-helper/issues).
+
+##### Comment puis-je traduire dans une autre langue ?
+Voici un exemple pour ajouter la langue anglaise :\
+Créer le fichier /resources/**js**/lang/**en.js**, et écrivez vos traductions, par exemple :
+```javascript
+export default {
+  langName: 'English',
+  password: {
+    label: "Password",
+    enter: "Enter a password",
+    ...
+}
+```
+Créez ensuite une [pull request](https://github.com/osajw/terr-helper/pulls).

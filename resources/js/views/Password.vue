@@ -5,7 +5,7 @@
       <v-slide-y-transition>
         <v-card v-if="ready && !needPassword" outlined>
           <v-card-title class="headline">
-            <LocaleChanger small />
+            <span />
             <span>{{ $tcolon('password.enterYour') }}</span>
           </v-card-title>
           <v-form ref="loginForm" v-model="isFormLoginValid" @submit.prevent="login">

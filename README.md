@@ -13,7 +13,7 @@
 
 # Installation
 ## Windows
-Download and run [the executable](https://github.com/osajw/terr-helper/releases/download/v1.1.0/Territory-Helper-Setup-1.1.0.exe).
+Download and run [the executable](https://github.com/osajw/terr-helper/releases/download/v1.1.1/Territory-Helper-Setup-1.1.1.exe).
 
 ## Server
 ```sh

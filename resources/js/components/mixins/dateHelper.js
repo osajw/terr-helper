@@ -1,3 +1,5 @@
+import i18n from '../../plugins/i18n'
+
 export const dateHelper = {
   methods: {
     $formatDate (date, atHour = false) {
@@ -8,11 +10,11 @@ export const dateHelper = {
       const mm = n2(d.getMonth() + 1)
       const yy = n2(d.getFullYear())
       if (!atHour) {
-        return this.$t('date', { dd, mm, yy })
+        return i18n.t('date', { dd, mm, yy })
       }
       const hh = n2(d.getHours())
       const mn = n2(d.getMinutes())
-      return this.$t('dateAtTime', { dd, mm, yy, hh, mn })
+      return i18n.t('dateAtTime', { dd, mm, yy, hh, mn })
     },
     $dateDaysDiff (d1, d2) {
       const diffTime = Math.abs(d2 - d1)
